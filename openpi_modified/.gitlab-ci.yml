@@ -1,0 +1,243 @@
+stages:
+  - test
+  - integration
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+    - when: never
+
+default:
+  interruptible: true
+
+variables:
+  GIT_LFS_SKIP_SMUDGE: "true"
+  OPENPI_SHARED_VENV_PATH: "/mnt/workspace/heyuan/ci_cd/openpi_modified/.venv"
+  OPENPI_SHARED_HOME: "/root"
+  OPENPI_FFMPEG_LIB_DIR: "/root/miniconda3/envs/openpi-ci/lib"
+  OPENPI_GPU_WAIT_TIMEOUT_S: "1800"
+  OPENPI_GPU_WAIT_POLL_INTERVAL_S: "15"
+  OPENPI_GPU_MIN_FREE_MB: "76000"
+  OPENPI_TEST_HEARTBEAT_INTERVAL: "15"
+  OPENLOOP_FAST_CHECKPOINT_DIR: "/mnt/data/heyuan/openpi_modified/checkpoints/cfg_pi0.5_28_dim.all_public_datasets.with_updated_robomind2/cfg_pi0.5_28_dim.all_public_datasets.with_updated_robomind2_exp/10000"
+  OPENLOOP_FAST_CPFS_ROOT: "/mnt/workspace/openpi_minitest"
+  VALIDATION_SUITE: "smoke"
+
+.main_mr_web_rules: &main_mr_web_rules
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+
+.self_hosted_job: &self_hosted_job
+  tags:
+    - self-hosted
+    - linux
+    - x64
+
+.setup_tmp_root_cmd: &setup_tmp_root_cmd |
+  export OPENPI_CI_BASE_TMP="${OPENPI_CI_BASE_TMP:-/mnt/workspace/openpi-ci-runtime}"
+  mkdir -p "$OPENPI_CI_BASE_TMP"
+  export OPENPI_CI_TMP_ROOT="$OPENPI_CI_BASE_TMP/openpi-ci"
+  mkdir -p "$OPENPI_CI_TMP_ROOT"
+
+.verify_local_env_cmd: &verify_local_env_cmd |
+  test -d "$CI_PROJECT_DIR"
+  test -d "$CI_PROJECT_DIR/src"
+  test -d "$CI_PROJECT_DIR/packages/openpi-client/src"
+  test -x "$OPENPI_SHARED_VENV_PATH/bin/python"
+  test -d "$OPENPI_SHARED_HOME/.cache/openpi"
+  test -f "$OPENPI_SHARED_HOME/.cache/openpi/big_vision/paligemma_tokenizer.model"
+  test -f "$OPENPI_FFMPEG_LIB_DIR/libavformat.so.61"
+  mkdir -p "$OPENPI_CI_TMP_ROOT"
+
+.prune_stale_dirs_cmd: &prune_stale_dirs_cmd |
+  find "$OPENPI_CI_TMP_ROOT" -mindepth 1 -maxdepth 1 -type d \( -name 'openpi-runtime-*' -o -name 'openpi-pytest-cache-*' -o -name 'rt-*' -o -name 'pc-*' \) -mtime +1 -exec rm -rf {} +
+
+test-smoke:
+  stage: test
+  <<: [*self_hosted_job, *main_mr_web_rules]
+  timeout: 45m
+  script:
+    - set -euo pipefail
+    - *setup_tmp_root_cmd
+    - *verify_local_env_cmd
+    - *prune_stale_dirs_cmd
+    - export OPENPI_RUNTIME_ROOT="$OPENPI_CI_TMP_ROOT/openpi-runtime-${CI_PIPELINE_ID}-${CI_JOB_ID}"
+    - source scripts/ci/setup_runtime_env.sh "$OPENPI_RUNTIME_ROOT" "$OPENPI_SHARED_HOME"
+    - export PATH="$OPENPI_SHARED_VENV_PATH/bin:$PATH"
+    - export LD_LIBRARY_PATH="$OPENPI_FFMPEG_LIB_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    - export PYTHONPATH="$CI_PROJECT_DIR:$CI_PROJECT_DIR/src:$CI_PROJECT_DIR/packages/openpi-client/src${PYTHONPATH:+:$PYTHONPATH}"
+    - export PYTEST_ADDOPTS="-o cache_dir=$OPENPI_CI_TMP_ROOT/openpi-pytest-cache-${CI_PIPELINE_ID}-smoke"
+    - bash tests/run_tests.sh smoke -k 'not config_path2'
+  after_script:
+    - rm -rf "$OPENPI_CI_TMP_ROOT/openpi-runtime-${CI_PIPELINE_ID}-${CI_JOB_ID}" "$OPENPI_CI_TMP_ROOT/openpi-pytest-cache-${CI_PIPELINE_ID}-smoke"
+
+test-config-loss-drift:
+  stage: test
+  <<: [*self_hosted_job, *main_mr_web_rules]
+  timeout: 60m
+  script:
+    - set -euo pipefail
+    - *setup_tmp_root_cmd
+    - *verify_local_env_cmd
+    - *prune_stale_dirs_cmd
+    - export OPENPI_RUNTIME_ROOT="$OPENPI_CI_TMP_ROOT/openpi-runtime-${CI_PIPELINE_ID}-${CI_JOB_ID}"
+    - source scripts/ci/setup_runtime_env.sh "$OPENPI_RUNTIME_ROOT" "$OPENPI_SHARED_HOME"
+    - export PATH="$OPENPI_SHARED_VENV_PATH/bin:$PATH"
+    - export LD_LIBRARY_PATH="$OPENPI_FFMPEG_LIB_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    - export PYTHONPATH="$CI_PROJECT_DIR:$CI_PROJECT_DIR/src:$CI_PROJECT_DIR/packages/openpi-client/src${PYTHONPATH:+:$PYTHONPATH}"
+    - export PYTEST_ADDOPTS="-o cache_dir=$OPENPI_CI_TMP_ROOT/openpi-pytest-cache-${CI_PIPELINE_ID}-config-loss-drift"
+    - bash tests/run_tests.sh config-loss-drift
+  after_script:
+    - rm -rf "$OPENPI_CI_TMP_ROOT/openpi-runtime-${CI_PIPELINE_ID}-${CI_JOB_ID}" "$OPENPI_CI_TMP_ROOT/openpi-pytest-cache-${CI_PIPELINE_ID}-config-loss-drift"
+
+test-openloop-eval:
+  stage: integration
+  <<: [*self_hosted_job, *main_mr_web_rules]
+  needs:
+    - test-smoke
+    - test-config-loss-drift
+  retry: 1
+  timeout: 3h
+  script:
+    - set -euo pipefail
+    - *setup_tmp_root_cmd
+    - export OPENPI_CI_TMP_TARGET="$OPENPI_CI_BASE_TMP/openpi-ci-oe-${CI_PIPELINE_ID}-${CI_JOB_ID}"
+    - export OPENPI_CI_TMP_ROOT="/dev/shm/oc-oe-${CI_PIPELINE_ID}-${CI_JOB_ID}"
+    - mkdir -p "$OPENPI_CI_TMP_TARGET"
+    - rm -rf "$OPENPI_CI_TMP_ROOT"
+    - ln -s "$OPENPI_CI_TMP_TARGET" "$OPENPI_CI_TMP_ROOT"
+    - *verify_local_env_cmd
+    - *prune_stale_dirs_cmd
+    - bash scripts/ci/wait_for_gpu.sh
+    - export OPENPI_RUNTIME_ROOT="$OPENPI_CI_TMP_ROOT/rt-oe-${CI_PIPELINE_ID}-${CI_JOB_ID}"
+    - source scripts/ci/setup_runtime_env.sh "$OPENPI_RUNTIME_ROOT" "$OPENPI_SHARED_HOME"
+    - export PATH="$OPENPI_SHARED_VENV_PATH/bin:$PATH"
+    - export LD_LIBRARY_PATH="$OPENPI_FFMPEG_LIB_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    - export PYTHONPATH="$CI_PROJECT_DIR:$CI_PROJECT_DIR/src:$CI_PROJECT_DIR/packages/openpi-client/src${PYTHONPATH:+:$PYTHONPATH}"
+    - export PYTEST_ADDOPTS="-o cache_dir=$OPENPI_CI_TMP_ROOT/pc-oe-${CI_PIPELINE_ID}-${CI_JOB_ID}"
+    - export WANDB_MODE=disabled
+    - export XLA_PYTHON_CLIENT_PREALLOCATE=false
+    - '"$OPENPI_SHARED_VENV_PATH/bin/python" -m pytest -q tests/integration/test_openloop_eval_consistency.py::TestOpenloopEvalConsistency -m manual -v'
+  after_script:
+    - tmp_root="${OPENPI_CI_TMP_ROOT:-}"
+    - tmp_target="${OPENPI_CI_TMP_TARGET:-}"
+    - |
+      if [[ -n "$tmp_root" ]]; then
+        rm -rf "$tmp_root/rt-oe-${CI_PIPELINE_ID}-${CI_JOB_ID}" "$tmp_root/pc-oe-${CI_PIPELINE_ID}-${CI_JOB_ID}" "$tmp_root"
+      fi
+    - |
+      if [[ -n "$tmp_target" ]]; then
+        rm -rf "$tmp_target"
+      fi
+
+test-openloop-fast:
+  stage: integration
+  <<: [*self_hosted_job, *main_mr_web_rules]
+  needs:
+    - test-smoke
+    - test-config-loss-drift
+  timeout: 45m
+  script:
+    - set -euo pipefail
+    - *setup_tmp_root_cmd
+    - export OPENPI_CI_TMP_TARGET="$OPENPI_CI_BASE_TMP/openpi-ci-of-${CI_PIPELINE_ID}-${CI_JOB_ID}"
+    - export OPENPI_CI_TMP_ROOT="/dev/shm/oc-of-${CI_PIPELINE_ID}-${CI_JOB_ID}"
+    - mkdir -p "$OPENPI_CI_TMP_TARGET"
+    - rm -rf "$OPENPI_CI_TMP_ROOT"
+    - ln -s "$OPENPI_CI_TMP_TARGET" "$OPENPI_CI_TMP_ROOT"
+    - checkpoint_dir="$OPENLOOP_FAST_CHECKPOINT_DIR"
+    - cpfs_root="$OPENLOOP_FAST_CPFS_ROOT"
+    - '[[ -n "$checkpoint_dir" ]] || { echo "checkpoint_dir is required" >&2; exit 2; }'
+    - '[[ -n "$cpfs_root" ]] || { echo "cpfs_root is required" >&2; exit 2; }'
+    - '[[ "$checkpoint_dir" = /* ]] || { echo "checkpoint_dir must be an absolute path" >&2; exit 2; }'
+    - '[[ "$cpfs_root" = /* ]] || { echo "cpfs_root must be an absolute path" >&2; exit 2; }'
+    - '[[ "$checkpoint_dir" == /mnt/* ]] || { echo "checkpoint_dir must stay under /mnt" >&2; exit 2; }'
+    - '[[ "$cpfs_root" == /mnt/* ]] || { echo "cpfs_root must stay under /mnt" >&2; exit 2; }'
+    - '[[ -d "$checkpoint_dir" ]] || { echo "checkpoint_dir does not exist: $checkpoint_dir" >&2; exit 2; }'
+    - '[[ -d "$cpfs_root" && -f "$cpfs_root/minitest_manifest.json" ]] || { echo "Minitest dataset not found at $cpfs_root" >&2; echo "Please run: python scripts/prepare_minitest_dataset.py --cpfs-root $cpfs_root" >&2; exit 2; }'
+    - *verify_local_env_cmd
+    - *prune_stale_dirs_cmd
+    - bash scripts/ci/wait_for_gpu.sh
+    - export OPENPI_RUNTIME_ROOT="$OPENPI_CI_TMP_ROOT/rt-of-${CI_PIPELINE_ID}-${CI_JOB_ID}"
+    - source scripts/ci/setup_runtime_env.sh "$OPENPI_RUNTIME_ROOT" "$OPENPI_SHARED_HOME"
+    - export PATH="$OPENPI_SHARED_VENV_PATH/bin:$PATH"
+    - export LD_LIBRARY_PATH="$OPENPI_FFMPEG_LIB_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    - export PYTHONPATH="$CI_PROJECT_DIR:$CI_PROJECT_DIR/src:$CI_PROJECT_DIR/packages/openpi-client/src${PYTHONPATH:+:$PYTHONPATH}"
+    - export PYTEST_ADDOPTS="-o cache_dir=$OPENPI_CI_TMP_ROOT/pc-of-${CI_PIPELINE_ID}-${CI_JOB_ID}"
+    - export XLA_PYTHON_CLIENT_PREALLOCATE=false
+    - bash tests/run_tests.sh openloop-eval --config src/openpi/configs/cfg_opensource/cfg_minitest_openloop.py --repo_id robomind_2/agilex/fold_clothes/success_episodes --checkpoint_dir "$OPENLOOP_FAST_CHECKPOINT_DIR" --dataset_root "$OPENLOOP_FAST_CPFS_ROOT" --vis_dir "$OPENPI_RUNTIME_ROOT/openloop_fast_vis" --results_dir "$OPENPI_RUNTIME_ROOT/openloop_fast_results" --num_batches 2 --batch_size 4 --output openloop_fast_results.json
+  artifacts:
+    when: always
+    paths:
+      - openloop_fast_results.json
+    expire_in: 7 days
+  after_script:
+    - rm -rf "$OPENPI_CI_TMP_ROOT/rt-of-${CI_PIPELINE_ID}-${CI_JOB_ID}" "$OPENPI_CI_TMP_ROOT/pc-of-${CI_PIPELINE_ID}-${CI_JOB_ID}" "$OPENPI_CI_TMP_ROOT" "$OPENPI_CI_TMP_TARGET"
+
+test-suite:
+  stage: integration
+  <<: [*self_hosted_job, *main_mr_web_rules]
+  needs:
+    - test-smoke
+    - test-config-loss-drift
+    - test-openloop-eval
+    - test-openloop-fast
+  timeout: 2h
+  script:
+    - set -euo pipefail
+    - *setup_tmp_root_cmd
+    - *verify_local_env_cmd
+    - *prune_stale_dirs_cmd
+    - export OPENPI_RUNTIME_ROOT="$OPENPI_CI_TMP_ROOT/openpi-runtime-${CI_PIPELINE_ID}-${CI_JOB_ID}"
+    - source scripts/ci/setup_runtime_env.sh "$OPENPI_RUNTIME_ROOT" "$OPENPI_SHARED_HOME"
+    - export PATH="$OPENPI_SHARED_VENV_PATH/bin:$PATH"
+    - export LD_LIBRARY_PATH="$OPENPI_FFMPEG_LIB_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    - export PYTHONPATH="$CI_PROJECT_DIR:$CI_PROJECT_DIR/src:$CI_PROJECT_DIR/packages/openpi-client/src${PYTHONPATH:+:$PYTHONPATH}"
+    - export PYTEST_ADDOPTS="-o cache_dir=$OPENPI_CI_TMP_ROOT/openpi-pytest-cache-${CI_PIPELINE_ID}-full"
+    - bash tests/run_tests.sh full
+  after_script:
+    - rm -rf "$OPENPI_CI_TMP_ROOT/openpi-runtime-${CI_PIPELINE_ID}-${CI_JOB_ID}" "$OPENPI_CI_TMP_ROOT/openpi-pytest-cache-${CI_PIPELINE_ID}-full"
+
+runner-validation:
+  stage: integration
+  <<: *self_hosted_job
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: manual
+  timeout: 90m
+  script:
+    - set -euo pipefail
+    - *setup_tmp_root_cmd
+    - *verify_local_env_cmd
+    - *prune_stale_dirs_cmd
+    - export OPENPI_RUNTIME_ROOT="$OPENPI_CI_TMP_ROOT/openpi-runtime-${CI_PIPELINE_ID}-${VALIDATION_SUITE}"
+    - source scripts/ci/setup_runtime_env.sh "$OPENPI_RUNTIME_ROOT" "$OPENPI_SHARED_HOME"
+    - export PATH="$OPENPI_SHARED_VENV_PATH/bin:$PATH"
+    - export LD_LIBRARY_PATH="$OPENPI_FFMPEG_LIB_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    - export PYTHONPATH="$CI_PROJECT_DIR:$CI_PROJECT_DIR/src:$CI_PROJECT_DIR/packages/openpi-client/src${PYTHONPATH:+:$PYTHONPATH}"
+    - export PYTEST_ADDOPTS="-o cache_dir=$OPENPI_CI_TMP_ROOT/openpi-pytest-cache-${CI_PIPELINE_ID}-${VALIDATION_SUITE}"
+    - |
+      case "$VALIDATION_SUITE" in
+        smoke)
+          bash tests/run_tests.sh smoke -k 'not config_path2'
+          ;;
+        full)
+          bash tests/run_tests.sh full
+          ;;
+        hotspot)
+          "$OPENPI_SHARED_VENV_PATH/bin/python" -m pytest -q tests/integration/test_integration.py -q
+          ;;
+        config-rl)
+          "$OPENPI_SHARED_VENV_PATH/bin/python" -m pytest -q tests/unit/config/test_config.py tests/unit/rl/test_multi_rl_dataset.py -q
+          ;;
+        *)
+          echo "Unknown validation suite: $VALIDATION_SUITE" >&2
+          exit 2
+          ;;
+      esac
+  after_script:
+    - rm -rf "$OPENPI_CI_TMP_ROOT/openpi-runtime-${CI_PIPELINE_ID}-${VALIDATION_SUITE}" "$OPENPI_CI_TMP_ROOT/openpi-pytest-cache-${CI_PIPELINE_ID}-${VALIDATION_SUITE}"

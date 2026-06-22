@@ -1,0 +1,122 @@
+{
+    "_doc": "Template: pure teleop recording. Use this when an operator drives the robot through the leader / spacemouse / phone and frames are saved to disk. Underscore-prefixed keys (_doc, _comment_*) are inline annotations stripped by the validator — leave them in while you fill the rest, or delete them once you've memorised the schema.",
+
+    "schema_version": "1",
+    "_comment_schema_version": "Always '1' for this MR. Bump when the schema changes incompatibly.",
+
+    "session_id": "FILL_ME_IN.session.v1",
+    "_comment_session_id": "Free-form unique label. Convention: '<task>.<mode>.v<n>' e.g. 'pack_socks.record.v1'.",
+
+    "robot": {
+        "type": "FILL_ME_IN",
+        "_comment_type": "Options: 'arxx5_bimanual', 'bi_piper_follower', 'so100_follower', 'so101_follower', 'koch_follower', 'piper'. Must match a key registered in src/lerobot/robots/.",
+        "id": "FILL_ME_IN",
+        "_comment_id": "Free-form id string. ARX convention: stringified physical ID, e.g. '2', '5', '8'."
+    },
+
+    "hardware_meta": {
+        "_comment_cameras": "Camera names are arbitrary; downstream models care about the set head/left_wrist/right_wrist (+ optionally low_head, third_view). index_or_path: integer → /dev/videoN (run `lerobot-find-cameras opencv` to find the right number), string → arbitrary path. Typical resolution 640x480, fps 30; bump to 1280x720 for low_head if you need close-up detail.",
+        "end_effector": {
+            "_comment_end_effector": "Per-arm end-effector configuration. Each side carries {type, model}. type options: 'gripper' (future: suction, soft hand). model options: 'long', 'short' — affects gripper open/close thresholds; pick what's physically installed. Bimanual rigs may run mismatched grippers (e.g. left=long, right=short); the schema makes that explicit.",
+            "left":  {"type": "gripper", "model": "long"},
+            "right": {"type": "gripper", "model": "long"}
+        },
+        "cameras": {
+            "head":        {"type": "opencv", "index_or_path": 0, "width": 640, "height": 480, "fps": 30},
+            "left_wrist":  {"type": "opencv", "index_or_path": 0, "width": 640, "height": 480, "fps": 30},
+            "right_wrist": {"type": "opencv", "index_or_path": 0, "width": 640, "height": 480, "fps": 30}
+        }
+    },
+
+    "collection_meta": {
+        "operator_name": "FILL_ME_IN",
+        "_comment_operator_name": "Human running this run (pinyin or username). Lands in dataset metadata and batch repo_id.",
+        "adversary_operator": "",
+        "_comment_adversary_operator": "Second human; only used in self_play mode where two humans alternate. Leave \"\" for record/infer/infer_record.",
+        "is_adversary": false,
+        "_comment_is_adversary": "true only in self_play mode (mirrors having a destroyer role).",
+        "is_self_play": false,
+        "_comment_is_self_play": "true only in self_play mode.",
+        "acting_arms": ["left", "right"],
+        "_comment_acting_arms": "Which arm(s) are actively driven during this session. Options: ['left', 'right'] (default, bi-manual), ['left'], or ['right']. Lets downstream training filter / weight single-arm vs bi-manual data without grepping prompts.",
+        "site_location": "beijing_6F",
+        "_comment_site_location": "Free-form location label, e.g. 'beijing_6F', 'beijing_7F', 'shanghai_lab'.",
+        "city": "beijing",
+        "_comment_city": "Free-form city label.",
+        "mode": "record",
+        "_comment_mode": "Authoritative mode selector. Must be 'record' here. Other templates: infer / infer_record / self_play."
+    },
+
+    "task_meta": {
+        "task_name": "FILL_ME_IN",
+        "_comment_task_name": "Lowercase snake_case identifier, e.g. 'pack_socks', 'string_bead', 'seatbelt'. Used in repo_id and as the dataset prefix.",
+        "task_stage": {
+            "mode": "full",
+            "_comment_mode": "'full' for end-to-end episodes. Custom values flag a sub-task variant (e.g. recovery-only data).",
+            "stages": "",
+            "_comment_stages": "Optional freeform sub-task tag, e.g. 'single.recover_2_left_move'. Surfaces in dataset metadata and helps disambiguate variants for downstream filtering."
+        },
+        "objects": {},
+        "_comment_objects": "Free-form {name: {attr: value}} dict. Values are usable in prompts via {name.attr} (e.g. set objects.socks.color='white' then write 'Pack the {socks.color} socks.')."
+    },
+
+    "task_description": "FILL_ME_IN — describe the scene + acceptance criteria so collectors know what 'success' looks like.",
+    "_comment_task_description": "Natural-language description shown in the preflight popup. Chinese is fine — preflight uses a CJK-capable font. Operators glance at this to confirm they're running the right task.",
+
+    "task_spec": {
+        "_comment_task_spec": "Either an inline dict (this template) or a path string pointing to a JSON file. Inline is preferred — one artifact per session.",
+        "task_id": "FILL_ME_IN",
+        "_comment_task_id": "Usually identical to task_meta.task_name.",
+        "roles": {
+            "operator": {
+                "prompt": "FILL_ME_IN. Optionally use {placeholders} from task_meta.objects (e.g. {socks.color}) or collection_meta (e.g. {operator}, {city}, {site}).",
+                "_comment_prompt": "Language instruction sent to the policy. Supports {a.b.c} template substitution from task_meta.objects + collection_meta. {speed} survives substitution and is filled per-episode by RoleSpec.get_prompt_for_episode if speed_variation is set.",
+                "max_time_s": null,
+                "_comment_max_time_s": "Per-role timeout. null in record mode (cfg.dataset.episode_time_s is authoritative). Used in self_play where each role has its own clock."
+            }
+        }
+    },
+
+    "recording": {
+        "_comment_recording": "Dataset-write knobs. Defaults at lerobot/recording/task/session_config.py:RECORDING_DEFAULTS.",
+        "num_episodes": 15,
+        "_comment_num_episodes": "How many episodes to record before the session ends. Operator can Ctrl+Esc early.",
+        "episode_time_s": 300,
+        "_comment_episode_time_s": "Per-episode timeout in seconds. Hard stop even if no success/failure key pressed.",
+        "reset_time_s": 5,
+        "_comment_reset_time_s": "Sleep between episodes so the operator can reset the scene. 0 = no pause.",
+        "fps": 30,
+        "_comment_fps": "Control loop and dataset write rate. Most rigs are 30; some bipiper setups go up to 60.",
+        "video": true,
+        "_comment_video": "true → encode camera streams to mp4 via NVENC (or libx264 fallback). false → keep raw frames (huge).",
+        "display_data": true,
+        "_comment_display_data": "Open the rerun.io viewer alongside the recorder so the operator sees what the cameras see.",
+        "play_sounds": true,
+        "_comment_play_sounds": "Audio cues (start of episode, success, failure). Falls back to OS TTS if HTTP TTS server unreachable.",
+        "enable_log_say": true,
+        "_comment_enable_log_say": "If false, the recorder still logs text but skips audio. Use for noisy lab environments or unattended runs.",
+        "enable_logging": true,
+        "_comment_enable_logging": "Set false to suppress the AsyncLogger entirely. Almost always leave true.",
+        "progress_print_interval_s": 1.0,
+        "_comment_progress_print_interval_s": "Per-tick progress line throttle. 1.0 = once per second. 0 = print every tick (~30 Hz, noisy).",
+        "auto_success": false,
+        "_comment_auto_success": "true skips the y/n end-of-episode confirmation. Use for fully-autonomous infer_record runs where you trust the policy's stop signal.",
+        "resume": false,
+        "_comment_resume": "true → continue writing to an existing dataset directory. false → expect to start fresh (errors if the dir exists).",
+        "debug": false,
+        "_comment_debug": "Verbose logging. Operators leave false; flip to true when diagnosing.",
+        "data_root": "$HOME/lerobot_data_collection",
+        "_comment_data_root": "Where datasets land on disk. $HOME / $VAR are expanded at write time. Override with --dataset.root=... on the CLI for one-off runs."
+    },
+
+    "inference": {},
+    "_comment_inference": "Empty in record mode (no policy runs). See templates/infer*.json / self_play.json for the full set of inference knobs.",
+
+    "intervention": {},
+    "_comment_intervention": "Empty in record mode (no policy → no intervention loop). See self_play.json for the available knobs.",
+
+    "self_play": {},
+    "_comment_self_play": "Empty in record mode. See self_play.json.",
+
+    "subtask": {}
+}

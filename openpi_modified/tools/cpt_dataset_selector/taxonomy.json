@@ -1,0 +1,665 @@
+{
+  "schema_version": "1.2.0",
+  "robocoin_datamanager_reference": "Aligned with RoboCOIN-DataManager v1.1 style (action / object / scene). This file is project-maintained; replace with official RoboCOIN export when available (pip: robocoin, repo: github.com/FlagOpen/RoboCOIN).",
+  "structured_field_aliases": {
+    "atomic_actions": [
+      "atomic_action",
+      "action",
+      "skill",
+      "verb",
+      "primitive"
+    ],
+    "object_categories": [
+      "object_category",
+      "object",
+      "object_type",
+      "obj_category",
+      "category"
+    ],
+    "scenes": [
+      "scene",
+      "environment",
+      "setting",
+      "location",
+      "room"
+    ]
+  },
+  "atomic_actions": [
+    {
+      "id": "pick",
+      "label": "Pick",
+      "synonyms": [
+        "pick",
+        "grasp",
+        "grab",
+        "take"
+      ]
+    },
+    {
+      "id": "place",
+      "label": "Place",
+      "synonyms": [
+        "place",
+        "put",
+        "release",
+        "drop",
+        "set",
+        "lay"
+      ]
+    },
+    {
+      "id": "insert",
+      "label": "Insert",
+      "synonyms": [
+        "insert"
+      ]
+    },
+    {
+      "id": "pour",
+      "label": "Pour",
+      "synonyms": [
+        "pour"
+      ]
+    },
+    {
+      "id": "fold",
+      "label": "Fold",
+      "synonyms": [
+        "fold"
+      ]
+    },
+    {
+      "id": "unfold",
+      "label": "Unfold",
+      "synonyms": [
+        "unfold"
+      ]
+    },
+    {
+      "id": "zip",
+      "label": "Zip",
+      "synonyms": [
+        "zip"
+      ]
+    },
+    {
+      "id": "unzip",
+      "label": "Unzip",
+      "synonyms": [
+        "unzip",
+        "unlatch",
+        "uncap",
+        "unlock"
+      ]
+    },
+    {
+      "id": "open",
+      "label": "Open",
+      "synonyms": [
+        "open"
+      ]
+    },
+    {
+      "id": "close",
+      "label": "Close",
+      "synonyms": [
+        "close",
+        "shut",
+        "fold",
+        "latch",
+        "zip",
+        "cap",
+        "lock"
+      ]
+    },
+    {
+      "id": "hang",
+      "label": "Hang",
+      "synonyms": [
+        "hang",
+        "hook"
+      ]
+    },
+    {
+      "id": "push",
+      "label": "Push",
+      "synonyms": [
+        "push",
+        "slide",
+        "shove",
+        "nudge",
+        "propel"
+      ]
+    },
+    {
+      "id": "pull",
+      "label": "Pull",
+      "synonyms": [
+        "pull",
+        "draw",
+        "tug",
+        "yank",
+        "extract"
+      ]
+    },
+    {
+      "id": "wipe",
+      "label": "Wipe",
+      "synonyms": [
+        "wipe",
+        "clean",
+        "sweep",
+        "dust",
+        "scrub",
+        "mop",
+        "sanitize"
+      ]
+    },
+    {
+      "id": "cut",
+      "label": "Cut",
+      "synonyms": [
+        "cut",
+        "slice",
+        "peel",
+        "chop",
+        "dice",
+        "carve"
+      ]
+    },
+    {
+      "id": "assemble",
+      "label": "Assemble",
+      "synonyms": [
+        "assemble",
+        "stack",
+        "build",
+        "connect",
+        "attach",
+        "join",
+        "snap"
+      ]
+    },
+    {
+      "id": "disassemble",
+      "label": "Disassemble",
+      "synonyms": [
+        "disassemble",
+        "detach",
+        "remove",
+        "unscrew",
+        "separate"
+      ]
+    },
+    {
+      "id": "sort",
+      "label": "Sort",
+      "synonyms": [
+        "sort",
+        "classify",
+        "separate",
+        "organize",
+        "categorize"
+      ]
+    },
+    {
+      "id": "turn",
+      "label": "Turn",
+      "synonyms": [
+        "turn",
+        "rotate",
+        "twist",
+        "switch",
+        "toggle",
+        "dial",
+        "spin"
+      ]
+    },
+    {
+      "id": "press",
+      "label": "Press",
+      "synonyms": [
+        "press",
+        "push button",
+        "click",
+        "tap",
+        "depress"
+      ]
+    },
+    {
+      "id": "stir",
+      "label": "Stir",
+      "synonyms": [
+        "stir",
+        "mix",
+        "whisk",
+        "blend"
+      ]
+    },
+    {
+      "id": "scoop",
+      "label": "Scoop / spoon",
+      "synonyms": [
+        "scoop",
+        "spoon",
+        "ladle"
+      ]
+    },
+    {
+      "id": "hang",
+      "label": "Hang",
+      "synonyms": [
+        "hang",
+        "hook",
+        "sling",
+        "drape"
+      ]
+    },
+    {
+      "id": "tie",
+      "label": "Tie",
+      "synonyms": [
+        "tie",
+        "wrap",
+        "bundle",
+        "strap",
+        "tape"
+      ]
+    },
+    {
+      "id": "plug",
+      "label": "Plug",
+      "synonyms": [
+        "plug",
+        "unplug",
+        "socket",
+        "cable",
+        "insert usb"
+      ]
+    },
+    {
+      "id": "shake",
+      "label": "Shake",
+      "synonyms": [
+        "shake",
+        "roll",
+        "jiggle",
+        "rattle"
+      ]
+    },
+
+    {
+      "id": "screw",
+      "label": "Screw",
+      "synonyms": [
+        "screw",
+        "unscrew",
+        "bolt",
+        "fasten"
+      ]
+    }
+  ],
+  "object_categories": [
+    {
+      "id": "clothes",
+      "label": "Clothes",
+      "synonyms": [
+        "clothes"
+      ]
+    },
+    {
+      "id": "sock",
+      "label": "Sock",
+      "synonyms": [
+        "sock",
+        "socks"
+      ]
+    },
+    {
+      "id": "box",
+      "label": "Box",
+      "synonyms": [
+        "box",
+        "boxes"
+      ]
+    },
+    {
+      "id": "wine",
+      "label": "Wine",
+      "synonyms": [
+        "wine",
+        "rio",
+        "baijiu",
+        "liquor",
+        "champagne"
+      ]
+    },
+    {
+      "id": "towel",
+      "label": "Towel",
+      "synonyms": [
+        "towel"
+      ]
+    },
+    {
+      "id": "seatbelt",
+      "label": "Seatbelt",
+      "synonyms": [
+        "seatbelt",
+        "belt"
+      ]
+    },
+    {
+      "id": "food",
+      "label": "Food / produce",
+      "synonyms": [
+        "food",
+        "fruit",
+        "vegetable",
+        "bread",
+        "apple",
+        "banana",
+        "salad",
+        "meal",
+        "breakfast",
+        "dumpling",
+        "baozi",
+        "meat",
+        "cheese",
+        "egg",
+        "snack",
+        "cereal",
+        "noodle",
+        "rice",
+        "soup"
+      ]
+    },
+    {
+      "id": "container",
+      "label": "Containers / boxes",
+      "synonyms": [
+        "box",
+        "container",
+        "bin",
+        "basket",
+        "crate",
+        "storage",
+        "drawer",
+        "cabinet",
+        "carton",
+        "case",
+        "trunk",
+        "tray"
+      ]
+    },
+    {
+      "id": "tableware",
+      "label": "Tableware / cups",
+      "synonyms": [
+        "cup",
+        "plate",
+        "bowl",
+        "mug",
+        "glass",
+        "chopsticks",
+        "utensil",
+        "fork",
+        "knife",
+        "spoon",
+        "tray",
+        "saucer"
+      ]
+    },
+    {
+      "id": "fabric",
+      "label": "Fabric / clothes",
+      "synonyms": [
+        "cloth",
+        "clothes",
+        "towel",
+        "shirt",
+        "garment",
+        "sock",
+        "pants",
+        "jacket",
+        "shoe",
+        "sneaker"
+      ]
+    },
+    {
+      "id": "electronics",
+      "label": "Electronics",
+      "synonyms": [
+        "phone",
+        "bluetooth",
+        "lamp",
+        "bulb",
+        "device",
+        "charger",
+        "keyboard",
+        "mouse",
+        "remote",
+        "tablet",
+        "camera",
+        "sensor"
+      ]
+    },
+    {
+      "id": "furniture",
+      "label": "Furniture",
+      "synonyms": [
+        "chair",
+        "table",
+        "desk",
+        "shelf",
+        "furniture",
+        "stool",
+        "couch",
+        "bed",
+        "nightstand"
+      ]
+    },
+    {
+      "id": "toy",
+      "label": "Toys / balls",
+      "synonyms": [
+        "ball",
+        "cube",
+        "toy",
+        "block",
+        "puzzle",
+        "lego"
+      ]
+    },
+    {
+      "id": "lego",
+      "label": "Lego / lego",
+      "synonyms": [
+        "lego"
+      ]
+    },
+    {
+      "id": "bottle",
+      "label": "Bottles / liquids",
+      "synonyms": [
+        "bottle",
+        "jar",
+        "kettle",
+        "pot",
+        "steamer",
+        "pitcher",
+        "can",
+        "milk",
+        "wine"
+      ]
+    },
+    {
+      "id": "medical",
+      "label": "Medical / lab",
+      "synonyms": [
+        "syringe",
+        "vial",
+        "tube",
+        "sample",
+        "specimen",
+        "mask",
+        "glove"
+      ]
+    },
+    {
+      "id": "packaging",
+      "label": "Packaging / wrap",
+      "synonyms": [
+        "wrap",
+        "bag",
+        "plastic",
+        "foil",
+        "bubble",
+        "tape",
+        "label",
+        "sticker"
+      ]
+    }
+  ],
+  "scenes": [
+    {
+      "id": "kitchen",
+      "label": "Kitchen / dining",
+      "synonyms": [
+        "kitchen",
+        "dining",
+        "counter",
+        "stove",
+        "sink",
+        "steamer",
+        "plate",
+        "meal",
+        "cooktop",
+        "pantry"
+      ]
+    },
+    {
+      "id": "table",
+      "label": "Table / desk work",
+      "synonyms": [
+        "table",
+        "desk",
+        "workspace",
+        "countertop",
+        "tray"
+      ]
+    },
+    {
+      "id": "shelf",
+      "label": "Shelf / storage",
+      "synonyms": [
+        "shelf",
+        "rack",
+        "storage",
+        "warehouse",
+        "closet"
+      ]
+    },
+    {
+      "id": "floor",
+      "label": "Floor / ground",
+      "synonyms": [
+        "floor",
+        "ground"
+      ]
+    },
+    {
+      "id": "hotel",
+      "label": "Hotel / service",
+      "synonyms": [
+        "hotel",
+        "room service",
+        "hospitality",
+        "suite"
+      ]
+    },
+    {
+      "id": "office",
+      "label": "Office",
+      "synonyms": [
+        "office",
+        "workspace",
+        "cubicle",
+        "meeting room"
+      ]
+    },
+    {
+      "id": "lab",
+      "label": "Lab / bench",
+      "synonyms": [
+        "lab",
+        "bench",
+        "workbench",
+        "clean room"
+      ]
+    },
+    {
+      "id": "mobile_base",
+      "label": "Mobile / navigation",
+      "synonyms": [
+        "mobile",
+        "navigate",
+        "drive",
+        "car",
+        "hallway",
+        "corridor"
+      ]
+    },
+    {
+      "id": "bedroom",
+      "label": "Bedroom / living",
+      "synonyms": [
+        "bedroom",
+        "living room",
+        "lounge",
+        "sofa"
+      ]
+    },
+    {
+      "id": "factory",
+      "label": "Factory / industrial",
+      "synonyms": [
+        "factory",
+        "assembly line",
+        "industrial",
+        "plant"
+      ]
+    },
+    {
+      "id": "retail",
+      "label": "Retail / store",
+      "synonyms": [
+        "store",
+        "shop",
+        "checkout",
+        "shelf retail"
+      ]
+    },
+    {
+      "id": "outdoor",
+      "label": "Outdoor",
+      "synonyms": [
+        "outdoor",
+        "yard",
+        "garden",
+        "patio",
+        "street"
+      ]
+    },
+    {
+      "id": "warehouse",
+      "label": "Warehouse / logistics",
+      "synonyms": [
+        "warehouse",
+        "loading dock",
+        "pallet jack",
+        "forklift area"
+      ]
+    }
+  ]
+}

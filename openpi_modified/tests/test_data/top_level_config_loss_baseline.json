@@ -1,0 +1,510 @@
+{
+  "batch_size": 1,
+  "configs": {
+    "cfg_pi0.5_14_dim_example.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi0.5_14_dim_example.npy",
+      "relative_path": "src/openpi/configs/cfg_pi0.5_14_dim_example.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.673870086669922,
+        "mean": 2.8966610431671143,
+        "min": 1.6633208990097046,
+        "sha256": "e4e5c8e7bc8d77f7a88fd984642ffd60dda701f2f8c3fd8626dcc85a598486de",
+        "sum": 144.8330535888672
+      }
+    },
+    "cfg_pi0.5_28_dim.robomind_2.0305.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi0.5_28_dim.robomind_2.0305.npy",
+      "relative_path": "src/openpi/configs/cfg_pi0.5_28_dim.robomind_2.0305.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.673870086669922,
+        "mean": 2.8966610431671143,
+        "min": 1.6633208990097046,
+        "sha256": "e4e5c8e7bc8d77f7a88fd984642ffd60dda701f2f8c3fd8626dcc85a598486de",
+        "sum": 144.8330535888672
+      }
+    },
+    "cfg_pi0.5_fold_T_14_dim.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi0.5_fold_T_14_dim.npy",
+      "relative_path": "src/openpi/configs/cfg_pi0.5_fold_T_14_dim.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.673870086669922,
+        "mean": 2.8966610431671143,
+        "min": 1.6633208990097046,
+        "sha256": "e4e5c8e7bc8d77f7a88fd984642ffd60dda701f2f8c3fd8626dcc85a598486de",
+        "sum": 144.8330535888672
+      }
+    },
+    "cfg_pi0.5_pick_and_place_14_dim.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi0.5_pick_and_place_14_dim.npy",
+      "relative_path": "src/openpi/configs/cfg_pi0.5_pick_and_place_14_dim.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.673870086669922,
+        "mean": 2.8966610431671143,
+        "min": 1.6633208990097046,
+        "sha256": "e4e5c8e7bc8d77f7a88fd984642ffd60dda701f2f8c3fd8626dcc85a598486de",
+        "sum": 144.8330535888672
+      }
+    },
+    "cfg_pi0.5_pick_and_place_14_dim_subtask_cond.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi0.5_pick_and_place_14_dim_subtask_cond.npy",
+      "relative_path": "src/openpi/configs/cfg_pi0.5_pick_and_place_14_dim_subtask_cond.py",
+      "shape": [
+        1,
+        32
+      ],
+      "summary": {
+        "max": 28.04322052001953,
+        "mean": 16.989269256591797,
+        "min": 10.738811492919922,
+        "sha256": "bbe9c10d08d1124b857ee65d3a752aee273920c1bef3989dd2471dad9da875dd",
+        "sum": 543.6566162109375
+      }
+    },
+    "cfg_pi0.5_pour_water_14_dim.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi0.5_pour_water_14_dim.npy",
+      "relative_path": "src/openpi/configs/cfg_pi0.5_pour_water_14_dim.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.673870086669922,
+        "mean": 2.8966610431671143,
+        "min": 1.6633208990097046,
+        "sha256": "e4e5c8e7bc8d77f7a88fd984642ffd60dda701f2f8c3fd8626dcc85a598486de",
+        "sum": 144.8330535888672
+      }
+    },
+    "cfg_pi0.5_seatbelt_14_dim.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi0.5_seatbelt_14_dim.npy",
+      "relative_path": "src/openpi/configs/cfg_pi0.5_seatbelt_14_dim.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.673870086669922,
+        "mean": 2.988598346710205,
+        "min": 1.6633208990097046,
+        "sha256": "389179f6f05aaa222055aa3e8030226d20e95e4a6406e1a65fa6051e1b2b8593",
+        "sum": 149.42991638183594
+      }
+    },
+    "cfg_pi0.5_tube_14_dim.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi0.5_tube_14_dim.npy",
+      "relative_path": "src/openpi/configs/cfg_pi0.5_tube_14_dim.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.673870086669922,
+        "mean": 2.8966610431671143,
+        "min": 1.6633208990097046,
+        "sha256": "e4e5c8e7bc8d77f7a88fd984642ffd60dda701f2f8c3fd8626dcc85a598486de",
+        "sum": 144.8330535888672
+      }
+    },
+    "cfg_pi05_base_finetune_all_grab_approach_qirl.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi05_base_finetune_all_grab_approach_qirl.npy",
+      "relative_path": "src/openpi/configs/cfg_pi05_base_finetune_all_grab_approach_qirl.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.673870086669922,
+        "mean": 2.8966610431671143,
+        "min": 1.6633208990097046,
+        "sha256": "e4e5c8e7bc8d77f7a88fd984642ffd60dda701f2f8c3fd8626dcc85a598486de",
+        "sum": 144.8330535888672
+      }
+    },
+    "cfg_pi05_base_finetune_box_recap_cpt_0320.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi05_base_finetune_box_recap_cpt_0320.npy",
+      "relative_path": "src/openpi/configs/cfg_pi05_base_finetune_box_recap_cpt_0320.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.673870086669922,
+        "mean": 2.8966612815856934,
+        "min": 1.6633208990097046,
+        "sha256": "38ac4d7b8992f0e7ac66a822825be63a04b0789551e76ede70a1760ab07e7526",
+        "sum": 144.83306884765625
+      }
+    },
+    "cfg_pi05_base_finetune_box_recap_cpt_0419_close.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi05_base_finetune_box_recap_cpt_0419_close.npy",
+      "relative_path": "src/openpi/configs/cfg_pi05_base_finetune_box_recap_cpt_0419_close.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.673870086669922,
+        "mean": 2.8990073204040527,
+        "min": 1.6633208990097046,
+        "sha256": "10178edea734387be21760025bd599a5056dedb10cec7b478601b1445b612bad",
+        "sum": 144.9503631591797
+      }
+    },
+    "cfg_pi05_base_finetune_box_recap_pt_0323_rtc_nb.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi05_base_finetune_box_recap_pt_0323_rtc_nb.npy",
+      "relative_path": "src/openpi/configs/cfg_pi05_base_finetune_box_recap_pt_0323_rtc_nb.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.673870086669922,
+        "mean": 2.8990073204040527,
+        "min": 1.6633208990097046,
+        "sha256": "10178edea734387be21760025bd599a5056dedb10cec7b478601b1445b612bad",
+        "sum": 144.9503631591797
+      }
+    },
+    "cfg_pi05_base_finetune_box_value_stage1.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi05_base_finetune_box_value_stage1.npy",
+      "relative_path": "src/openpi/configs/cfg_pi05_base_finetune_box_value_stage1.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.673870086669922,
+        "mean": 2.8966610431671143,
+        "min": 1.6633208990097046,
+        "sha256": "e4e5c8e7bc8d77f7a88fd984642ffd60dda701f2f8c3fd8626dcc85a598486de",
+        "sum": 144.8330535888672
+      }
+    },
+    "cfg_pi05_base_finetune_box_value_stage2.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi05_base_finetune_box_value_stage2.npy",
+      "relative_path": "src/openpi/configs/cfg_pi05_base_finetune_box_value_stage2.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.673870086669922,
+        "mean": 2.8966610431671143,
+        "min": 1.6633208990097046,
+        "sha256": "e4e5c8e7bc8d77f7a88fd984642ffd60dda701f2f8c3fd8626dcc85a598486de",
+        "sum": 144.8330535888672
+      }
+    },
+    "cfg_pi05_base_finetune_close_box_value_segmented.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi05_base_finetune_close_box_value_segmented.npy",
+      "relative_path": "src/openpi/configs/cfg_pi05_base_finetune_close_box_value_segmented.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.673870086669922,
+        "mean": 2.8966612815856934,
+        "min": 1.6633208990097046,
+        "sha256": "38ac4d7b8992f0e7ac66a822825be63a04b0789551e76ede70a1760ab07e7526",
+        "sum": 144.83306884765625
+      }
+    },
+    "cfg_pi05_base_finetune_clothes_recap_qirl.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi05_base_finetune_clothes_recap_qirl.npy",
+      "relative_path": "src/openpi/configs/cfg_pi05_base_finetune_clothes_recap_qirl.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.673870086669922,
+        "mean": 2.8966610431671143,
+        "min": 1.6633208990097046,
+        "sha256": "e4e5c8e7bc8d77f7a88fd984642ffd60dda701f2f8c3fd8626dcc85a598486de",
+        "sum": 144.8330535888672
+      }
+    },
+    "cfg_pi05_base_finetune_multi_task_distributional_value.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi05_base_finetune_multi_task_distributional_value.npy",
+      "relative_path": "src/openpi/configs/cfg_pi05_base_finetune_multi_task_distributional_value.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.673870086669922,
+        "mean": 2.8966610431671143,
+        "min": 1.6633208990097046,
+        "sha256": "e4e5c8e7bc8d77f7a88fd984642ffd60dda701f2f8c3fd8626dcc85a598486de",
+        "sum": 144.8330535888672
+      }
+    },
+    "cfg_pi05_base_finetune_multi_task_qirl.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi05_base_finetune_multi_task_qirl.npy",
+      "relative_path": "src/openpi/configs/cfg_pi05_base_finetune_multi_task_qirl.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.673870086669922,
+        "mean": 2.8966610431671143,
+        "min": 1.6633208990097046,
+        "sha256": "e4e5c8e7bc8d77f7a88fd984642ffd60dda701f2f8c3fd8626dcc85a598486de",
+        "sum": 144.8330535888672
+      }
+    },
+    "cfg_pi06_recap_indicator_bipiper_clothes_1215_0227.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi06_recap_indicator_bipiper_clothes_1215_0227.npy",
+      "relative_path": "src/openpi/configs/cfg_pi06_recap_indicator_bipiper_clothes_1215_0227.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.673870086669922,
+        "mean": 2.8966612815856934,
+        "min": 1.6633208990097046,
+        "sha256": "38ac4d7b8992f0e7ac66a822825be63a04b0789551e76ede70a1760ab07e7526",
+        "sum": 144.83306884765625
+      }
+    },
+    "cfg_pi06_recap_indicator_bipiper_clothes_all_0322.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi06_recap_indicator_bipiper_clothes_all_0322.npy",
+      "relative_path": "src/openpi/configs/cfg_pi06_recap_indicator_bipiper_clothes_all_0322.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.673870086669922,
+        "mean": 2.8966612815856934,
+        "min": 1.6633208990097046,
+        "sha256": "38ac4d7b8992f0e7ac66a822825be63a04b0789551e76ede70a1760ab07e7526",
+        "sum": 144.83306884765625
+      }
+    },
+    "cfg_pi06_seatbelt_value_selfplay_fixed.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi06_seatbelt_value_selfplay_fixed.npy",
+      "relative_path": "src/openpi/configs/cfg_pi06_seatbelt_value_selfplay_fixed.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.119039535522461,
+        "mean": 2.361599922180176,
+        "min": 1.5614902973175049,
+        "sha256": "8edd2bd99702f247fb91d1dcf3cc6f97a0d79ed1693478472f5d699ed85f9a7e",
+        "sum": 118.07999420166016
+      }
+    },
+    "cfg_pi06_seatbelt_value_selfplay_fixed_ablation_no_exclude_failures.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi06_seatbelt_value_selfplay_fixed_ablation_no_exclude_failures.npy",
+      "relative_path": "src/openpi/configs/cfg_pi06_seatbelt_value_selfplay_fixed_ablation_no_exclude_failures.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.119039535522461,
+        "mean": 2.361599922180176,
+        "min": 1.5614902973175049,
+        "sha256": "8edd2bd99702f247fb91d1dcf3cc6f97a0d79ed1693478472f5d699ed85f9a7e",
+        "sum": 118.07999420166016
+      }
+    },
+    "cfg_pi06_seatbelt_value_selfplay_fixed_best.py": {
+      "shape": [
+        1,
+        50
+      ],
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi06_seatbelt_value_selfplay_fixed_best.npy",
+      "relative_path": "src/openpi/configs/cfg_pi06_seatbelt_value_selfplay_fixed_best.py",
+      "summary": {
+        "max": 4.119039535522461,
+        "mean": 2.361599922180176,
+        "min": 1.5614902973175049,
+        "sha256": "8edd2bd99702f247fb91d1dcf3cc6f97a0d79ed1693478472f5d699ed85f9a7e",
+        "sum": 118.07999420166016
+      }
+    },
+    "cfg_pi06_seatbelt_value_selfplay_fixed_cross_negative.py": {
+      "shape": [
+        1,
+        50
+      ],
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi06_seatbelt_value_selfplay_fixed_cross_negative.npy",
+      "relative_path": "src/openpi/configs/cfg_pi06_seatbelt_value_selfplay_fixed_cross_negative.py",
+      "summary": {
+        "max": 4.119039535522461,
+        "mean": 2.361599922180176,
+        "min": 1.5614902973175049,
+        "sha256": "8edd2bd99702f247fb91d1dcf3cc6f97a0d79ed1693478472f5d699ed85f9a7e",
+        "sum": 118.07999420166016
+      }
+    },
+    "cfg_pi06_seatbelt_value_selfplay_fixed_destroyer_both.py": {
+      "shape": [
+        1,
+        50
+      ],
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi06_seatbelt_value_selfplay_fixed_destroyer_both.npy",
+      "relative_path": "src/openpi/configs/cfg_pi06_seatbelt_value_selfplay_fixed_destroyer_both.py",
+      "summary": {
+        "max": 4.119039535522461,
+        "mean": 2.361599922180176,
+        "min": 1.5614902973175049,
+        "sha256": "8edd2bd99702f247fb91d1dcf3cc6f97a0d79ed1693478472f5d699ed85f9a7e",
+        "sum": 118.07999420166016
+      }
+    },
+    "cfg_pi06_seatbelt_value_selfplay_fixed_destroyer_both_no_exclude_failures.py": {
+      "shape": [
+        1,
+        50
+      ],
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi06_seatbelt_value_selfplay_fixed_destroyer_both_no_exclude_failures.npy",
+      "relative_path": "src/openpi/configs/cfg_pi06_seatbelt_value_selfplay_fixed_destroyer_both_no_exclude_failures.py",
+      "summary": {
+        "max": 4.119039535522461,
+        "mean": 2.361599922180176,
+        "min": 1.5614902973175049,
+        "sha256": "8edd2bd99702f247fb91d1dcf3cc6f97a0d79ed1693478472f5d699ed85f9a7e",
+        "sum": 118.07999420166016
+      }
+    },
+    "cfg_pi06_train_distributional_value_model_bipiper_clothes_1230_0115_bin1.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi06_train_distributional_value_model_bipiper_clothes_1230_0115_bin1.npy",
+      "relative_path": "src/openpi/configs/cfg_pi06_train_distributional_value_model_bipiper_clothes_1230_0115_bin1.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.673870086669922,
+        "mean": 2.8966610431671143,
+        "min": 1.6633208990097046,
+        "sha256": "e4e5c8e7bc8d77f7a88fd984642ffd60dda701f2f8c3fd8626dcc85a598486de",
+        "sum": 144.8330535888672
+      }
+    },
+    "cfg_pi06_train_distributional_value_model_t5gemma270M_bipiper_clothes_1230_0115_bin1.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi06_train_distributional_value_model_t5gemma270M_bipiper_clothes_1230_0115_bin1.npy",
+      "relative_path": "src/openpi/configs/cfg_pi06_train_distributional_value_model_t5gemma270M_bipiper_clothes_1230_0115_bin1.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.119039535522461,
+        "mean": 2.361599922180176,
+        "min": 1.5614902973175049,
+        "sha256": "8edd2bd99702f247fb91d1dcf3cc6f97a0d79ed1693478472f5d699ed85f9a7e",
+        "sum": 118.07999420166016
+      }
+    },
+    "cfg_pi06_train_distributional_value_model_t5gemma270M_seatbelt_data_0212_0304.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi06_train_distributional_value_model_t5gemma270M_seatbelt_data_0212_0304.npy",
+      "relative_path": "src/openpi/configs/cfg_pi06_train_distributional_value_model_t5gemma270M_seatbelt_data_0212_0304.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.119039535522461,
+        "mean": 2.361599922180176,
+        "min": 1.5614902973175049,
+        "sha256": "8edd2bd99702f247fb91d1dcf3cc6f97a0d79ed1693478472f5d699ed85f9a7e",
+        "sum": 118.07999420166016
+      }
+    },
+    "cfg_pi06_value_model_bipiper_clothes_1215_0227_max3600.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi06_value_model_bipiper_clothes_1215_0227_max3600.npy",
+      "relative_path": "src/openpi/configs/cfg_pi06_value_model_bipiper_clothes_1215_0227_max3600.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.119039535522461,
+        "mean": 2.361599922180176,
+        "min": 1.5614902973175049,
+        "sha256": "8edd2bd99702f247fb91d1dcf3cc6f97a0d79ed1693478472f5d699ed85f9a7e",
+        "sum": 118.07999420166016
+      }
+    },
+    "cfg_pi06_value_model_bipiper_clothes_all_0322_stage2.py": {
+      "dtype": "float32",
+      "loss_file": "tests/test_data/top_level_config_loss_values/cfg_pi06_value_model_bipiper_clothes_all_0322_stage2.npy",
+      "relative_path": "src/openpi/configs/cfg_pi06_value_model_bipiper_clothes_all_0322_stage2.py",
+      "shape": [
+        1,
+        50
+      ],
+      "summary": {
+        "max": 4.119039535522461,
+        "mean": 2.361599922180176,
+        "min": 1.5614902973175049,
+        "sha256": "8edd2bd99702f247fb91d1dcf3cc6f97a0d79ed1693478472f5d699ed85f9a7e",
+        "sum": 118.07999420166016
+      }
+    }
+  },
+  "expected_xfails": {
+    "cfg_pi05_base_pack_socks_0106_0310_wo_pjl_trtc6.py": {
+      "reason": "REPO_ID list file not found: src/openpi/configs/repo_id_lists/pack_socks/repo_id_0106_0310_wo_pjl.txt",
+      "relative_path": "src/openpi/configs/cfg_pi05_base_pack_socks_0106_0310_wo_pjl_trtc6.py"
+    }
+  },
+  "init_seed": 0,
+  "loss_seed": 7,
+  "schema_version": 2
+}

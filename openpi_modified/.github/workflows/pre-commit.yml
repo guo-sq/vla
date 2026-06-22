@@ -1,0 +1,45 @@
+name: pre-commit
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    env:
+      GIT_LFS_SKIP_SMUDGE: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - uses: astral-sh/setup-uv@v5
+
+      - name: Collect changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            src/**/*.py
+            tests/**/*.py
+            scripts/**/*.py
+            packages/**/*.py
+            pyproject.toml
+            uv.lock
+            .pre-commit-config.yaml
+
+      - name: Run pre-commit
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: uvx --from pre-commit==4.1.0 pre-commit run --show-diff-on-failure --files ${{ steps.changed-files.outputs.all_changed_files }}
+
+      - name: Skip when no relevant changes
+        if: steps.changed-files.outputs.any_changed != 'true'
+        run: echo "No pre-commit tracked files changed."

@@ -1,0 +1,118 @@
+{
+    "_doc": "Template: run a trained policy WITHOUT saving data. Pure live inference for demos, latency benchmarks, or quick eyeballing of a checkpoint. Identical to infer_record except mode=infer and video defaults off — no dataset is written. Underscore-prefixed keys (_doc, _comment_*) are inline annotations stripped by the validator.",
+
+    "schema_version": "1",
+    "session_id": "FILL_ME_IN.session.v1",
+    "_comment_session_id": "Free-form unique label, e.g. 'pack_socks.infer.v1'.",
+
+    "robot": {
+        "type": "FILL_ME_IN",
+        "_comment_type": "Options: 'arxx5_bimanual', 'bi_piper_follower', 'so100_follower', 'so101_follower', 'koch_follower', 'piper'.",
+        "id": "FILL_ME_IN",
+        "_comment_id": "Free-form id string."
+    },
+
+    "hardware_meta": {
+        "_comment_cameras": "Same camera layout the policy was trained on. index_or_path: int → /dev/videoN, str → arbitrary path.",
+        "end_effector": {
+            "left":  {"type": "gripper", "model": "long"},
+            "right": {"type": "gripper", "model": "long"}
+        },
+        "cameras": {
+            "head":        {"type": "opencv", "index_or_path": 0, "width": 640, "height": 480, "fps": 30},
+            "left_wrist":  {"type": "opencv", "index_or_path": 0, "width": 640, "height": 480, "fps": 30},
+            "right_wrist": {"type": "opencv", "index_or_path": 0, "width": 640, "height": 480, "fps": 30}
+        }
+    },
+
+    "collection_meta": {
+        "operator_name": "FILL_ME_IN",
+        "_comment_operator_name": "Whoever is supervising — even infer-only runs are tagged with a name.",
+        "adversary_operator": "",
+        "is_adversary": false,
+        "is_self_play": false,
+        "acting_arms": ["left", "right"],
+        "_comment_acting_arms": "Which arm(s) the policy drives. Options: ['left', 'right'], ['left'], or ['right']. Match the policy's training scope.",
+        "site_location": "beijing_6F",
+        "city": "beijing",
+        "mode": "infer",
+        "_comment_mode": "Must be 'infer' for this template."
+    },
+
+    "task_meta": {
+        "task_name": "FILL_ME_IN",
+        "task_stage": {"mode": "full", "stages": ""},
+        "objects": {}
+    },
+
+    "task_description": "FILL_ME_IN — what scene the policy is being demo'd on.",
+
+    "task_spec": {
+        "task_id": "FILL_ME_IN",
+        "roles": {
+            "operator": {
+                "prompt": "FILL_ME_IN — the imperative the policy was trained on.",
+                "_comment_prompt": "The initial prompt sent to the policy server. Stays active until you press a Ctrl+<key> shortcut from the 'prompts' block below.",
+                "max_time_s": null
+            }
+        },
+        "policy_server": {
+            "host": "localhost",
+            "port": 8001,
+            "_comment_policy_server": "host: 'localhost' or LAN IP; port: typically 8000 / 8001. Required for any infer mode."
+        },
+        "prompts": {
+            "_comment_prompts": "Optional. Live prompt-switching map: pressing Ctrl+<key> during the session swaps the policy's prompt to the matching string starting on the next chunk. Keys MUST be a single character (digit or letter); multi-char keys are rejected at load. Omit the block (or leave it empty) to disable live switching. The switch is logged in real time; in modes that write a dataset (infer_record / self_play) the timeline lands in each episode's metadata under 'prompt_switches' and the active prompt is recorded per frame in the dataset's 'task' column. Common patterns: (1) variants on the same task — pick whichever phrasing the policy responds to best; (2) probing different sub-skills against a single checkpoint; (3) staging — start with a 'find' prompt, switch to 'grasp' once the object is in view.",
+            "1": "FILL_ME_IN — first variant. Usually mirrors roles.operator.prompt so Ctrl+1 returns to the default.",
+            "2": "FILL_ME_IN — second variant.",
+            "3": "FILL_ME_IN — third variant. Add or drop entries freely."
+        }
+    },
+
+    "recording": {
+        "_comment_recording": "Most fields here are vestigial in pure infer mode (no dataset is written). They're still type-checked, so leave the defaults unless you have a reason.",
+        "num_episodes": 15,
+        "_comment_num_episodes": "How many demo rollouts before the loop stops.",
+        "episode_time_s": 300,
+        "_comment_episode_time_s": "Per-rollout timeout.",
+        "reset_time_s": 5,
+        "fps": 30,
+        "video": false,
+        "_comment_video": "false by default in infer mode — no dataset means no video to encode.",
+        "display_data": true,
+        "play_sounds": true,
+        "enable_log_say": true,
+        "enable_logging": true,
+        "progress_print_interval_s": 1.0,
+        "auto_success": false,
+        "resume": false,
+        "debug": false,
+        "data_root": "$HOME/lerobot_data_collection"
+    },
+
+    "inference": {
+        "_comment_inference": "Same knobs as infer_record. See lerobot/recording/task/session_config.py:INFERENCE_DEFAULTS for defaults; the values below match those defaults plus a note per field.",
+        "mode": "async",
+        "_comment_mode": "'async' or 'sync'.",
+        "model_name": "FILL_ME_IN",
+        "_comment_model_name": "Free-form checkpoint label (e.g. 'seatbelt_recap_v1'). Lands in meta.info.infer_meta. Use \"\" if you really have no name for it.",
+        "action_horizon": 50,
+        "_comment_action_horizon": "Must match the policy's training value.",
+        "infer_interval": 20,
+        "_comment_infer_interval": "Control ticks between inference requests.",
+        "auto_infer_interval": true,
+        "default_infer_delay": 0,
+        "inference_speedup": 1.0,
+        "fusion_type": "linear",
+        "fusion_window": 0,
+        "fusion_exp_decay": 2.0,
+        "smooth_sigma": 0.0,
+        "transition_steps": 15,
+        "log_action_chunks": false,
+        "persist_inference_log": false,
+        "_comment_persist_inference_log": "No-op in pure infer mode — there's no dataset to colocate the log with. Listed here for parity; flip on in templates/infer_record.json or templates/self_play.json instead."
+    },
+    "intervention": {},
+    "self_play": {},
+    "subtask": {}
+}

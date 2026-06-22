@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CPT Dataset Selector 说明</title>
+  <style>
+    :root {
+      --bg: #f8fafc; --paper: #fff; --ink: #1e293b; --muted: #64748b; --border: #e2e8f0;
+      --teal: #0d9488; --teal-bg: #ccfbf1; --orange: #ea580c; --blue: #2563eb;
+      --radius: 10px; --font: "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 2rem clamp(1rem, 4vw, 3rem); font-family: var(--font); font-size: 15px;
+      line-height: 1.6; color: var(--ink); background: var(--bg); max-width: 56rem; margin-left: auto; margin-right: auto; }
+    .banner { background: linear-gradient(135deg, #0f766e, #115e59); color: #ecfeff; padding: 1rem 1.25rem;
+      border-radius: var(--radius); margin-bottom: 1.5rem; font-size: 0.9rem; }
+    h1 { font-size: 1.65rem; margin: 0 0 1rem; padding-bottom: 0.55rem; border-bottom: 3px solid var(--teal); }
+    h2 { font-size: 1.15rem; margin: 2rem 0 0.75rem; color: #0f766e; }
+    table { width: 100%; border-collapse: collapse; margin: 0.8rem 0; background: var(--paper);
+      border-radius: var(--radius); overflow: hidden; font-size: 0.88rem;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06); }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.6rem; text-align: left; vertical-align: top; }
+    th { background: var(--teal-bg); color: #134e4a; font-weight: 600; }
+    tr:nth-child(even) td { background: #f8fafc; }
+    .figure { margin: 1.25rem 0; padding: 1.1rem; background: var(--paper); border: 1px solid var(--border);
+      border-radius: var(--radius); box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04); }
+    .figure figcaption { font-size: 0.82rem; color: var(--muted); margin-top: 0.55rem; text-align: center; }
+    .figure svg { display: block; width: 100%; height: auto; }
+    code { font-family: ui-monospace, monospace; font-size: 0.86em; background: #f1f5f9; padding: 0.12em 0.35em; border-radius: 4px; }
+    pre.cmd { background: #1e293b; color: #e2e8f0; padding: 0.85rem 1rem; border-radius: 8px; font-size: 0.8rem;
+      overflow-x: auto; line-height: 1.45; }
+    a { color: var(--teal); }
+    .note { background: #fffbeb; border-left: 4px solid #d97706; padding: 0.65rem 0.9rem; margin: 1rem 0;
+      border-radius: 0 8px 8px 0; font-size: 0.92rem; }
+    .muted { color: var(--muted); }
+  </style>
+</head>
+<body>
+
+  <div class="banner">
+    完整说明与命令原文：<a href="cpt_dataset_selector.md" style="color:#99f6e4;"><strong>cpt_dataset_selector.md</strong></a> · 代码：
+    <code>tools/cpt_dataset_selector/</code>
+  </div>
+
+  <h1>CPT Dataset Selector</h1>
+  <p class="muted" style="color:var(--muted);margin-top:-0.5rem;">实现内容 · 命令行 · Web 操作（含图表）</p>
+
+  <h2>图 1 · 端到端数据流</h2>
+  <figure class="figure">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 200" role="img" aria-label="端到端流程">
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#475569"/></marker>
+      </defs>
+      <rect width="760" height="200" fill="#fafbfc"/>
+      <text x="380" y="22" text-anchor="middle" font-size="14" font-weight="700" fill="#0f766e">从训练 REPO_ID 到可导出列表</text>
+
+      <rect x="24" y="44" width="130" height="56" rx="8" fill="#ccfbf1" stroke="#0d9488" stroke-width="1.5"/>
+      <text x="89" y="68" text-anchor="middle" font-size="11" fill="#134e4a">训练配置</text>
+      <text x="89" y="86" text-anchor="middle" font-size="10" fill="#047857">REPO_ID</text>
+
+      <line x1="154" y1="72" x2="172" y2="72" stroke="#475569" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <rect x="178" y="44" width="120" height="56" rx="8" fill="#fff" stroke="#94a3b8"/>
+      <text x="238" y="72" text-anchor="middle" font-size="11" fill="#334155">manifest</text>
+
+      <line x1="298" y1="72" x2="318" y2="72" stroke="#475569" marker-end="url(#arr)"/>
+
+      <rect x="324" y="40" width="200" height="64" rx="8" fill="#fff7ed" stroke="#ea580c"/>
+      <text x="424" y="62" text-anchor="middle" font-size="11" fill="#9a3412">ROOT_DIR / repo_id</text>
+      <text x="424" y="78" text-anchor="middle" font-size="9" fill="#c2410c">meta/tasks.jsonl + info.json</text>
+      <text x="424" y="94" text-anchor="middle" font-size="9" fill="#64748b">index（SQLite）</text>
+
+      <line x1="524" y1="72" x2="556" y2="72" stroke="#475569" marker-end="url(#arr)"/>
+
+      <rect x="562" y="44" width="174" height="56" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+      <text x="649" y="68" text-anchor="middle" font-size="11" fill="#1e40af">FastAPI + 静态页</text>
+      <text x="649" y="86" text-anchor="middle" font-size="9" fill="#3b82f6">taxonomy 筛选 / 导出</text>
+
+      <rect x="200" y="118" width="360" height="64" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.2"/>
+      <text x="380" y="142" text-anchor="middle" font-size="11" font-weight="600" fill="#065f46">产出</text>
+      <text x="380" y="160" text-anchor="middle" font-size="10" fill="#047857">cpt_repo_ids.json / .py（REPO_ID 列表）</text>
+      <line x1="649" y1="100" x2="380" y2="118" stroke="#94a3b8" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+    </svg>
+    <figcaption>清单 → 扫描任务元数据入库 → 浏览器筛选 → 导出</figcaption>
+  </figure>
+
+  <h2>图 2 · CLI 子命令关系</h2>
+  <figure class="figure">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 140" role="img">
+      <rect width="720" height="140" fill="#fafbfc"/>
+      <text x="360" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#0f766e">python -m tools.cpt_dataset_selector &lt;command&gt;</text>
+      <rect x="40" y="44" width="190" height="76" rx="8" fill="#fff" stroke="#0d9488"/>
+      <text x="135" y="72" text-anchor="middle" font-size="12" font-weight="600" fill="#134e4a">manifest</text>
+      <text x="135" y="92" text-anchor="middle" font-size="9.5" fill="#64748b">manifest.json</text>
+      <text x="135" y="108" text-anchor="middle" font-size="9.5" fill="#64748b">可选 --config 合并</text>
+
+      <rect x="265" y="44" width="190" height="76" rx="8" fill="#fff" stroke="#ea580c"/>
+      <text x="360" y="72" text-anchor="middle" font-size="12" font-weight="600" fill="#9a3412">count</text>
+      <text x="360" y="92" text-anchor="middle" font-size="9.5" fill="#64748b">打印合并后</text>
+      <text x="360" y="108" text-anchor="middle" font-size="9.5" fill="#64748b">REPO_ID 数量</text>
+
+      <rect x="490" y="44" width="190" height="76" rx="8" fill="#fff" stroke="#2563eb"/>
+      <text x="585" y="72" text-anchor="middle" font-size="12" font-weight="600" fill="#1e40af">index</text>
+      <text x="585" y="92" text-anchor="middle" font-size="9.5" fill="#64748b">index.sqlite3</text>
+      <text x="585" y="108" text-anchor="middle" font-size="9.5" fill="#64748b">--full 全量重建</text>
+    </svg>
+    <figcaption>服务单独启动：<code>python -m tools.cpt_dataset_selector.server</code></figcaption>
+  </figure>
+
+  <h2>图 3 · Web 界面操作流</h2>
+  <figure class="figure">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 260" role="img">
+      <defs>
+        <marker id="a2" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#475569"/></marker>
+      </defs>
+      <rect width="760" height="260" fill="#fafbfc"/>
+      <text x="380" y="22" text-anchor="middle" font-size="14" font-weight="700" fill="#0f766e">单页 UI 主要操作</text>
+
+      <rect x="28" y="40" width="200" height="200" rx="10" fill="#fff" stroke="#94a3b8" stroke-width="1.5"/>
+      <text x="128" y="64" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">左侧 Filters</text>
+      <text x="40" y="88" font-size="10" fill="#64748b">· Atomic actions</text>
+      <text x="40" y="106" font-size="10" fill="#64748b">· Object categories</text>
+      <text x="40" y="124" font-size="10" fill="#64748b">· Scenes</text>
+      <text x="40" y="152" font-size="10" fill="#334155">（/api/taxonomy）</text>
+
+      <rect x="248" y="40" width="484" height="48" rx="8" fill="#ccfbf1" stroke="#0d9488"/>
+      <text x="490" y="62" text-anchor="middle" font-size="10" fill="#134e4a">Toolbar：Datasets 多选 · Min task match · Apply · Clear</text>
+      <text x="490" y="78" text-anchor="middle" font-size="9" fill="#047857">Apply → POST /api/query</text>
+
+      <line x1="128" y1="120" x2="248" y2="84" stroke="#cbd5e1" stroke-dasharray="3 2"/>
+
+      <rect x="248" y="100" width="484" height="64" rx="8" fill="#fff" stroke="#64748b"/>
+      <text x="490" y="122" text-anchor="middle" font-size="11" font-weight="600" fill="#1e293b">结果表</text>
+      <text x="490" y="140" text-anchor="middle" font-size="9.5" fill="#64748b">repos · robot_type · duration · tasks / matched / match%</text>
+      <text x="490" y="156" text-anchor="middle" font-size="9.5" fill="#64748b">行选 + Select all → Selected 计数</text>
+
+      <rect x="248" y="176" width="484" height="64" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+      <text x="490" y="198" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">Export</text>
+      <text x="490" y="216" text-anchor="middle" font-size="10" fill="#334155">JSON / Python · 无行选则导出当前全部结果</text>
+      <text x="490" y="232" text-anchor="middle" font-size="9" fill="#64748b">POST /api/export → 下载文件 + 预览</text>
+    </svg>
+    <figcaption>与后端 API 对应关系见下表</figcaption>
+  </figure>
+
+  <h2>表 · 主要 HTTP API（节选）</h2>
+  <table>
+    <thead>
+      <tr><th>方法</th><th>路径</th><th>作用</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>GET</td><td><code>/api/health</code></td><td>存活检查</td></tr>
+      <tr><td>GET</td><td><code>/api/datasets</code></td><td>索引中出现的 dataset 族名列表</td></tr>
+      <tr><td>GET</td><td><code>/api/taxonomy</code></td><td>原子动作 / 物体 / 场景选项与别名</td></tr>
+      <tr><td>POST</td><td><code>/api/query</code></td><td>按筛选条件返回 repos 及汇总 episodes、时长</td></tr>
+      <tr><td>GET</td><td><code>/api/repo/{repo_id}</code></td><td>单库 meta + tasks 明细（当前前端未用）</td></tr>
+      <tr><td>GET</td><td><code>/api/search?q=</code></td><td>FTS 全文检索（当前前端未用）</td></tr>
+      <tr><td>POST</td><td><code>/api/export</code></td><td>body: <code>repo_ids</code> + <code>format</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <strong>环境变量：</strong><code>CPT_HOST</code>、<code>CPT_PORT</code>（默认 9897）、<code>CPT_INDEX_DB</code>、<code>CPT_TAXONOMY</code>。索引构建侧常用 <code>OPENPI_ROOT_DIR</code> 或 <code>--root-dir</code>。
+  </div>
+
+  <h2>命令速贴（仓库根目录）</h2>
+  <pre class="cmd">uv run python -m tools.cpt_dataset_selector manifest --out tools/cpt_dataset_selector/data/manifest.json
+
+uv run python -m tools.cpt_dataset_selector index \
+  --root-dir "${OPENPI_ROOT_DIR:-/mnt}" \
+  --manifest tools/cpt_dataset_selector/data/manifest.json \
+  --db tools/cpt_dataset_selector/data/index.sqlite3
+
+uv run python -m tools.cpt_dataset_selector.server</pre>
+
+</body>
+</html>

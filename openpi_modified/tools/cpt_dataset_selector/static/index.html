@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate" />
+  <title>CPT Dataset Selector</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body autocomplete="off">
+  <header class="header">
+    <h1>Anyverse CPT dataset selector</h1>
+    <p class="muted">Filter by atomic action/object/scene. Uses indexed <code>meta/tasks.jsonl</code>.</p>
+  </header>
+
+  <section class="toolbar">
+    <button type="button" id="btn-query">Apply filters</button>
+    <button type="button" id="btn-clear">Clear filters</button>
+    <div
+      class="dataset-picker"
+      id="dataset-picker"
+      title="勾选需限定的数据集；不选表示全部数据集。"
+    >
+      <span class="dataset-picker-caption">Datasets</span>
+      <div class="dataset-picker-inner">
+        <div class="dataset-picker-field">
+          <input
+            type="text"
+            id="dataset-picker-input"
+            class="dataset-picker-input"
+            readonly
+            placeholder="All datasets"
+            autocomplete="off"
+            role="combobox"
+            aria-expanded="false"
+            aria-haspopup="listbox"
+            aria-controls="dataset-picker-dropdown"
+          />
+        </div>
+        <div id="dataset-picker-dropdown" class="dataset-picker-dropdown" role="listbox" hidden>
+          <div class="dataset-picker-bar">
+            <button type="button" id="dataset-clear-sel" class="dataset-picker-textbtn" title="Select all datasets (default)">All</button>
+          </div>
+          <div id="dataset-checks" class="dataset-picker-options"></div>
+        </div>
+      </div>
+    </div>
+    <label
+      class="inline"
+      title="Enter a number between 0 and 1 (含 0 与 1). With taxonomy filters: hide repos where matched_tasks / total_tasks is below this ratio."
+    >Min task match (0–1)
+      <input
+        type="number"
+        id="min-match-ratio"
+        class="input-narrow"
+        min="0"
+        max="1"
+        step="0.05"
+        placeholder="0–1"
+        autocomplete="off"
+      />
+    </label>
+  </section>
+
+  <div class="layout">
+    <aside class="filters">
+      <h2>Atomic actions</h2>
+      <div id="atomic-actions" class="chk-grid"></div>
+      <h2>Object categories</h2>
+      <div id="object-categories" class="chk-grid"></div>
+      <h2>Scenes</h2>
+      <div id="scenes" class="chk-grid"></div>
+    </aside>
+    <main class="main">
+      <div class="stats">
+        <span id="stat-filtered">Filtered: <strong>0</strong> repos</span>
+        <span id="stat-episodes">Episodes: <strong>—</strong></span>
+        <span id="stat-hours">Duration: <strong>—</strong> h</span>
+        <span id="stat-selected">Selected: <strong>0</strong> repos</span>
+      </div>
+      <div class="table-wrap">
+        <table class="repo-table">
+          <thead>
+            <tr>
+              <th><input type="checkbox" id="select-all" title="Select all visible" /></th>
+              <th>repo_id</th>
+              <th>dataset</th>
+              <th>robot_type</th>
+              <th title="Hours from meta/info.json (total_frames / fps)">duration (h)</th>
+              <th>tasks</th>
+              <th>matched</th>
+              <th>match</th>
+            </tr>
+          </thead>
+          <tbody id="repo-body"></tbody>
+        </table>
+      </div>
+      <section class="export">
+        <h2>Export</h2>
+        <button type="button" id="btn-export-json">Export JSON</button>
+        <button type="button" id="btn-export-py">Export Python list</button>
+        <p class="muted small">Each export also downloads a file (<code>cpt_repo_ids.json</code> or <code>cpt_repo_ids.py</code>).</p>
+        <pre id="export-preview" class="preview"></pre>
+      </section>
+    </main>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

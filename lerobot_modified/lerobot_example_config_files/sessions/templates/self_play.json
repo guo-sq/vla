@@ -1,0 +1,214 @@
+{
+    "_doc": "Template: builder + destroyer self-play loop. Builder policy tries to complete the task; destroyer policy resets / messes up the scene so the next builder rollout starts from a fresh disturbance. Value model rates each rollout for success_when checks. Safety block defines collision-current bounds and N1/N2/N3 recovery. Underscore-prefixed keys (_doc, _comment_*) are inline annotations stripped by the validator.",
+
+    "schema_version": "1",
+    "session_id": "FILL_ME_IN.session.v1",
+    "_comment_session_id": "Free-form unique label, convention '<task>.self_play.<model_tag>.v<n>'.",
+
+    "robot": {
+        "type": "FILL_ME_IN",
+        "_comment_type": "Options: 'arxx5_bimanual', 'bi_piper_follower'. Self-play assumes a bimanual rig.",
+        "id": "FILL_ME_IN"
+    },
+
+    "hardware_meta": {
+        "end_effector": {
+            "left":  {"type": "gripper", "model": "long"},
+            "right": {"type": "gripper", "model": "long"}
+        },
+        "cameras": {
+            "head":        {"type": "opencv", "index_or_path": 0, "width": 640, "height": 480, "fps": 30},
+            "left_wrist":  {"type": "opencv", "index_or_path": 0, "width": 640, "height": 480, "fps": 30},
+            "right_wrist": {"type": "opencv", "index_or_path": 0, "width": 640, "height": 480, "fps": 30}
+        }
+    },
+
+    "collection_meta": {
+        "operator_name": "FILL_ME_IN",
+        "_comment_operator_name": "Primary human at the station (intervention + Ctrl+Esc).",
+        "adversary_operator": "",
+        "_comment_adversary_operator": "Informational only — name of a distinct second human alternating roles. Leave \"\" when one person handles both roles (the common case).",
+        "is_adversary": true,
+        "_comment_is_adversary": "true: this run has a destroyer role.",
+        "is_self_play": true,
+        "_comment_is_self_play": "true: builder + destroyer alternate.",
+        "acting_arms": ["left", "right"],
+        "_comment_acting_arms": "Aggregate arm coverage across all roles in this self-play session. Typically ['left', 'right'] because the two roles often use different arms (e.g. builder=right_hand_only, destroyer=left_hand_only). Per-role arm restriction is set independently via task_spec.roles.<role>.action_mask.",
+        "site_location": "beijing_6F",
+        "city": "beijing",
+        "mode": "self_play",
+        "_comment_mode": "Must be 'self_play' for this template."
+    },
+
+    "task_meta": {
+        "task_name": "FILL_ME_IN",
+        "task_stage": {"mode": "full", "stages": ""},
+        "_comment_stages": "Set to a stage label only when collecting a partial / recovery trajectory. Model identity belongs in inference.model_name, not here.",
+        "objects": {}
+    },
+
+    "task_description": "FILL_ME_IN — describe what builder and destroyer do.",
+
+    "task_spec": {
+        "task_id": "FILL_ME_IN",
+        "roles": {
+            "_comment_roles": "self_play requires >=2 roles. Builder completes the task; destroyer disturbs the scene. Names are free-form but 'builder' / 'destroyer' is the convention. Each role can carry its own policy_server, success_when, etc.",
+            "builder": {
+                "prompt": "FILL_ME_IN — builder imperative, optionally with {speed} placeholder driven by speed_variation.",
+                "max_time_s": 60,
+                "_comment_max_time_s": "Per-role timeout in seconds; this is the per-builder-attempt budget. self_play uses the role timeout, NOT recording.episode_time_s.",
+                "action_mask": "right_hand_only",
+                "_comment_action_mask": "Options: 'right_hand_only', 'left_hand_only', null. Limits which arm the policy may move during this role.",
+                "timeout_recovery": "recovery_prompt",
+                "_comment_timeout_recovery": "What to do on timeout. Options: 'recovery_prompt' (re-prompt the policy), 'force_human_takeover' (pause and wait for operator).",
+                "home_wait_before_end_s": 3,
+                "_comment_home_wait_before_end_s": "Seconds to wait at home before declaring the role complete. Filter for transient at-home states.",
+                "speed_variation": {
+                    "lower_bound_s": 12,
+                    "upper_bound_s": 13,
+                    "step_s": 1,
+                    "_comment_speed_variation": "Per-episode {speed} placeholder rotates through [lower, upper] in steps of step_s. Use to expose the policy to different speed budgets across rollouts."
+                },
+                "success_when": {
+                    "_comment_success_when": "Tuple of conditions that must ALL hold for the role to count as success. Checked once per tick after the role's grace window.",
+                    "at_home": true,
+                    "_comment_at_home": "Require the robot to be at the home pose (defined by task_spec.reset.reference_pose).",
+                    "value_gte": -0.3,
+                    "_comment_value_gte": "Require value_model output >= this number. Drop or set null to ignore.",
+                    "speed_threshold": 0.1,
+                    "_comment_speed_threshold": "Require joint velocity below this (rad/s). Filter for 'stably at home', not 'passing through home'."
+                }
+            },
+            "destroyer": {
+                "prompt": "FILL_ME_IN — destroyer imperative.",
+                "max_time_s": 60,
+                "action_mask": "left_hand_only",
+                "timeout_recovery": "force_human_takeover",
+                "home_wait_before_end_s": 5,
+                "success_when": {
+                    "at_home": true,
+                    "value_lte": -0.97,
+                    "_comment_value_lte": "Destroyer goal is to push value toward -1 (failure state for builder). Tighter bound = stricter disruption.",
+                    "speed_threshold": 0.1
+                }
+            }
+        },
+        "policy_server": {
+            "host": "localhost",
+            "port": 8001,
+            "_comment_policy_server": "Shared policy server (handles both roles). For split servers, move policy_server INSIDE each role and remove this top-level one."
+        },
+        "prompts": {
+            "_comment_prompts": "Optional. Live prompt-switching map shared across roles: pressing Ctrl+<key> during a role swaps the active runtime's prompt to the matching string on the next chunk. Keys MUST be a single character (digit or letter); multi-char keys are rejected at load. Three things to know: (1) Switches do NOT survive role boundaries — the next role starts on its own roles.<name>.prompt (with speed_variation applied), then you can Ctrl+<key> again. (2) The switch only affects the CURRENTLY-active role's policy_runtime; the other role keeps its task-spec prompt for when it next runs. (3) Safety-recovery prompts (N1/N2/timeout) STILL override your choice — safety wins — but the recovery transition is recorded in 'prompt_switches' tagged with its source so you can audit the full timeline. The active prompt at each tick lands in the dataset's per-frame 'task' column; the 'prompt_switches' ordered timeline ({step, t_s, prompt, source}) is appended to each episode in episodes.jsonl and also emitted to recording_logs/<ts>/self_play_events.jsonl as 'prompt_switch' events. Common pattern: keep a 'rescue' prompt on Ctrl+r for when the builder gets stuck without triggering full intervention.",
+            "1": "FILL_ME_IN — variant of the builder prompt (e.g. a re-grasp phrasing).",
+            "2": "FILL_ME_IN — variant of the destroyer prompt.",
+            "r": "FILL_ME_IN — optional 'rescue' / recovery prompt the operator can swap to without entering intervention. Add or drop entries freely."
+        },
+        "value_model": {
+            "host": "localhost",
+            "port": 8002,
+            "_comment_value_model": "Separate value-model server used by success_when checks. Often on the same box as the policy server but a different port."
+        },
+        "reset": {
+            "_comment_reset": "Home pose definition. Robot must be at this pose (within threshold) and stable (below speed_threshold) to count as 'home' for success_when.at_home.",
+            "reference_pose": [],
+            "_comment_reference_pose": "Float[14] joint positions [l1..l7, r1..r7] for arxx5_bimanual (gripper as joint 7). Capture with `python -m lerobot.scripts.get_pose ...`.",
+            "threshold": 5,
+            "_comment_threshold": "Per-joint distance tolerance for 'at home' (rad for arms, gripper units for grippers).",
+            "speed_threshold": 0.03,
+            "home_wait_s": 3.0,
+            "_comment_home_wait_s": "Seconds robot must remain at home before reset is considered complete."
+        },
+        "safety": {
+            "_comment_safety": "Collision detection + N1/N2/N3 recovery policy. Triggered when joint currents exceed bounds.",
+            "collision_current_bounds": {
+                "_comment_collision_current_bounds": "{joint_index: [min, max]} (null = unbounded that side). Joint indices are 1-based per arx convention. Numbers are amperes; calibrate per arm.",
+                "7": [-4, null],
+                "9": [-1.5, null],
+                "10": [-2, null]
+            },
+            "recovery": {
+                "_comment_recovery": "Tiered recovery: N1 = first attempt, N3 = give up and ask for human. threshold = consecutive collision events that escalate to this tier.",
+                "n1": {
+                    "threshold": 1,
+                    "prompt": "Collision happened. Return to a safe position.",
+                    "execute_time_s": 5.0,
+                    "stable_time_s": 0.5,
+                    "speed_threshold": 0.1,
+                    "timeout_s": 12.0
+                },
+                "n2": {
+                    "threshold": 3,
+                    "prompt": "Back to home position.",
+                    "execute_time_s": 5.0,
+                    "stable_time_s": 0.5,
+                    "speed_threshold": 0.1,
+                    "timeout_s": 15.0
+                },
+                "n3": {
+                    "threshold": 4,
+                    "action": "force_human_takeover",
+                    "_comment_action": "n3 has no prompt — at this point we always hand control to the human."
+                }
+            }
+        }
+    },
+
+    "recording": {
+        "num_episodes": 30,
+        "_comment_num_episodes": "How many builder+destroyer pairs to record. For infer-only self-play (no dataset), set to a large number and rely on Ctrl+Esc.",
+        "episode_time_s": 60,
+        "_comment_episode_time_s": "Vestigial in self_play (role.max_time_s is authoritative) but still type-checked.",
+        "reset_time_s": 5,
+        "_comment_reset_time_s": "Between builder/destroyer pairs. Often 0 for self-play (no operator reset).",
+        "fps": 30,
+        "video": true,
+        "display_data": true,
+        "play_sounds": true,
+        "enable_log_say": true,
+        "enable_logging": true,
+        "progress_print_interval_s": 1.0,
+        "auto_success": false,
+        "resume": false,
+        "debug": false,
+        "data_root": "$HOME/lerobot_data_collection"
+    },
+
+    "inference": {
+        "mode": "async",
+        "model_name": "FILL_ME_IN",
+        "_comment_model_name": "Free-form label identifying the checkpoint being served (e.g. 'seatbelt_recap_v1'). Lands in meta.info.infer_meta so episodes can be grouped by model.",
+        "action_horizon": 50,
+        "infer_interval": 20,
+        "auto_infer_interval": true,
+        "default_infer_delay": 0,
+        "inference_speedup": 1.0,
+        "_comment_inference_speedup": "1.5 is common in self_play to fit more rollouts per hour, but only safe if the policy was trained on a similar action rate.",
+        "fusion_type": "linear",
+        "fusion_window": 0,
+        "fusion_exp_decay": 2.0,
+        "smooth_sigma": 0.0,
+        "transition_steps": 15,
+        "log_action_chunks": false,
+        "persist_inference_log": false,
+        "_comment_persist_inference_log": "When true, every inference call from every per-role policy_runtime is appended to <dataset>/meta/inference_log.parquet, tagged with episode_index and role ('builder' / 'destroyer'). Useful for self-play latency analysis and 'who-did-what' attribution. ~600 KB/min total (regardless of role count). Off by default."
+    },
+    "intervention": {
+        "_comment_intervention": "How long the operator has to take over / evacuate when a role times out and timeout_recovery=force_human_takeover. Defaults at INTERVENTION_DEFAULTS.",
+        "waiting_intervention_time_s": 2.0,
+        "_comment_waiting_intervention_time_s": "Seconds to give the operator to grab the leader / spacemouse before the recorder considers intervention started.",
+        "waiting_evacuation_time_s": 2.0,
+        "_comment_waiting_evacuation_time_s": "After intervention ends, seconds to let the operator step back before policy resumes.",
+        "pose_sync_duration_s": 3.0,
+        "_comment_pose_sync_duration_s": "How long the leader needs to match the follower pose before takeover is accepted.",
+        "leader_movement_timeout_s": 30.0,
+        "_comment_leader_movement_timeout_s": "If the operator hasn't moved the leader in this many seconds during intervention, abort and reset."
+    },
+    "self_play": {
+        "max_total_time_s": null,
+        "_comment_max_total_time_s": "Cap on total session wall time in seconds. null = no cap (stop only by num_episodes or Ctrl+Esc).",
+        "infer_only": false,
+        "_comment_infer_only": "true → run the loop but DO NOT write any dataset (no recording, no parquet). Use for demos / latency benchmarks where you just want to see the policies play. When true the entire recording block is largely vestigial; set reset_time_s=0 and enable_log_say=false for an uninterrupted demo."
+    },
+    "subtask": {}
+}

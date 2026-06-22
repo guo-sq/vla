@@ -1,0 +1,19 @@
+{
+  "model": "all_public_dataset",
+  "checkpoint": "/mnt/oss_models/models_deploy/2603/all_public_dataset/cfg_pi0.5_28_dim.all_public_datasets/cfg_pi0.5_28_dim.all_public_datasets_exp_0216/99999",
+  "checkpoint_dir": "/mnt/oss_models/models_deploy/2603/all_public_dataset/cfg_pi0.5_28_dim.all_public_datasets/cfg_pi0.5_28_dim.all_public_datasets_exp_0216/99999",
+  "dataset_root": "/mnt/oss_data/",
+  "repo_id": "lerobot/aloha_sim_transfer_cube_human",
+  "evaluated_at": "2026-03-24T17:28:06Z",
+  "num_batches": 1,
+  "batch_size": 64,
+  "metrics": {
+    "mse": 0.03771666456995523,
+    "rmse": 0.19420778709916664,
+    "ade": 0.686431450711815,
+    "fde": 0.9017483316720241,
+    "count": 64
+  },
+  "git_commit": "35b79840",
+  "note": "CPU openloop baseline refreshed from real evaluation outputs"
+}

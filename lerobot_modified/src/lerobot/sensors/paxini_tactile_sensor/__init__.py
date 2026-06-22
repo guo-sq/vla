@@ -1,0 +1,2 @@
+from .paxini_tactile import PaxiniTactileSensor
+from .configuration_paxini_tactile import PaxiniTactileSensorConfig

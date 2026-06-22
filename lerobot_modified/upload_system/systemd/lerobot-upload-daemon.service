@@ -1,0 +1,29 @@
+[Unit]
+Description=LeRobot Upload Daemon
+Documentation=https://github.com/huggingface/lerobot
+After=network.target
+
+[Service]
+Type=simple
+User=__USER__
+Group=__USER__
+WorkingDirectory=__PROJECT_ROOT__
+Environment="PATH=__PYTHON_BIN_DIR__:/usr/local/bin:/usr/bin:/bin"
+
+# 启动命令
+ExecStart=__PYTHON_PATH__ upload_system/upload_daemon.py --config upload_system/upload_config.yaml
+
+# 自动重启配置
+Restart=always
+RestartSec=10
+
+# 日志配置
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=lerobot-upload-daemon
+
+# 资源限制
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

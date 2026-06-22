@@ -1,0 +1,92 @@
+name: GitHub Runner Validation
+
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: Validation target on GitHub-hosted runner
+        required: true
+        default: smoke
+        type: choice
+        options:
+          - smoke
+          - full
+          - hotspot
+          - config-rl
+
+jobs:
+  run_tests:
+    name: Validate Local Runner (${{ inputs.suite }})
+    runs-on: self-hosted
+    timeout-minutes: 90
+    env:
+      GIT_LFS_SKIP_SMUDGE: true
+      OPENPI_SHARED_VENV_PATH: /mnt/workspace/heyuan/ci_cd/openpi_modified/.venv
+      OPENPI_SHARED_HOME: /root
+      OPENPI_FFMPEG_LIB_DIR: /root/miniconda3/envs/openpi-ci/lib
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Initialize CI temp root
+        shell: bash
+        run: echo "OPENPI_CI_TMP_ROOT=$RUNNER_TEMP/openpi-ci" >> "$GITHUB_ENV"
+
+      - name: Verify local environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d "$GITHUB_WORKSPACE"
+          test -d "$GITHUB_WORKSPACE/src"
+          test -d "$GITHUB_WORKSPACE/packages/openpi-client/src"
+          test -x "$OPENPI_SHARED_VENV_PATH/bin/python"
+          test -d "$OPENPI_SHARED_HOME/.cache/openpi"
+          test -f "$OPENPI_SHARED_HOME/.cache/openpi/big_vision/paligemma_tokenizer.model"
+          test -f "$OPENPI_FFMPEG_LIB_DIR/libavformat.so.61"
+          mkdir -p "$OPENPI_CI_TMP_ROOT"
+
+      - name: Prune stale CI temp directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          find "$OPENPI_CI_TMP_ROOT" -mindepth 1 -maxdepth 1 -type d \( -name 'openpi-runtime-*' -o -name 'openpi-pytest-cache-*' \) -mtime +1 -exec rm -rf {} +
+
+      - name: Run validation suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
+          export OPENPI_RUNTIME_ROOT="$OPENPI_CI_TMP_ROOT/openpi-runtime-${GITHUB_RUN_ID}-${{ inputs.suite }}"
+          source scripts/ci/setup_runtime_env.sh "$OPENPI_RUNTIME_ROOT" "$OPENPI_SHARED_HOME"
+          export PATH="$OPENPI_SHARED_VENV_PATH/bin:$PATH"
+          export LD_LIBRARY_PATH="$OPENPI_FFMPEG_LIB_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          export PYTHONPATH="$GITHUB_WORKSPACE:$GITHUB_WORKSPACE/src:$GITHUB_WORKSPACE/packages/openpi-client/src${PYTHONPATH:+:$PYTHONPATH}"
+          export PYTEST_ADDOPTS="-o cache_dir=$OPENPI_CI_TMP_ROOT/openpi-pytest-cache-${GITHUB_RUN_ID}-${{ inputs.suite }}"
+          case "${{ inputs.suite }}" in
+            smoke)
+              bash tests/run_tests.sh smoke -k 'not config_path2'
+              ;;
+            full)
+              bash tests/run_tests.sh full
+              ;;
+            hotspot)
+              "$OPENPI_SHARED_VENV_PATH/bin/python" -m pytest -q tests/integration/test_integration.py -q
+              ;;
+            config-rl)
+              "$OPENPI_SHARED_VENV_PATH/bin/python" -m pytest -q tests/unit/config/test_config.py tests/unit/rl/test_multi_rl_dataset.py -q
+              ;;
+            *)
+              echo "Unknown validation suite: ${{ inputs.suite }}" >&2
+              exit 2
+              ;;
+          esac
+
+      - name: Clean CI temp directories
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf \
+            "$OPENPI_CI_TMP_ROOT/openpi-runtime-${GITHUB_RUN_ID}-${{ inputs.suite }}" \
+            "$OPENPI_CI_TMP_ROOT/openpi-pytest-cache-${GITHUB_RUN_ID}-${{ inputs.suite }}"

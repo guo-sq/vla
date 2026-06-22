@@ -1,0 +1,42 @@
+INSERT_TUBE:
+  subtask_time_s:
+    grab_tube: 8.0
+    pickup_tube: 5.0
+    switch_tube: 7.0
+    lift_tube: 10.0
+    insert_tube: 2.0
+    release_tube: 3.0
+  frame_state_mapping:
+    invalid:
+      ind: 0
+      lang: 无效
+    deviation:
+      ind: 1
+      lang: 有偏
+    fail:
+      ind: 2
+      lang: 失败
+    success:
+      ind: 3
+      lang: 成功
+  sub_episode_task_json: tts_record_cfgs/insert_tube_subtask_annotations.jsonl
+  loop_task_record: False
+  record_mode: WithState_Record
+  Normal_Record:
+    sub_episode_taskinds: [1, 2, 3, 4, 5, 6]
+  WithState_Record:
+    start_record_time_s: 0.0
+    sub_episode_taskinds: [4,]
+    record_sub_task_till_episode_end: False
+    frame_state_prob:
+      invalid: 0.0
+      deviation: 1.0
+      fail: 0.0
+      success: 0.0
+    record_state_subtask: [4]
+    state_record_dur_s:
+      - [3.0, 5.0]
+    state_boundary_buffer_s:
+      - [5.0, 9.0]
+    state_selection_mode: [end_anchored] # random_within/end_anchored
+    max_state_records_per_sub_episode: [1]

@@ -1,0 +1,87 @@
+flowchart TD
+    A[Start Episode<br/>role=builder/destroyer prompt] --> B[Main Control Loop]
+    B --> B0{Ctrl+Space pressed?}
+    B0 -->|Yes| S[Enter human takeover mode]
+    B0 -->|No| C{Stop / exit_early?}
+    C -->|Yes| Z[End Episode Loop]
+    C -->|No| D{Role time limit reached?}
+
+    D -->|No| E[Get observation + check home]
+    D -->|Yes| D1{At home?}
+    D1 -->|Yes| D2[Mark timeout fail<br/>end_reason=role_time_limit_exceeded<br/>End loop]
+    D1 -->|No| D3{Role == builder?}
+    D3 -->|No| D4[Force human takeover required immediately<br/>reason=role_time_limit_not_home]
+    D3 -->|Yes| D5[Switch to recovery_n2<br/>prompt=collision_home_prompt]
+    D5 --> D6{Back home within n2_timeout_s?}
+    D6 -->|Yes| D2
+    D6 -->|No| D7[Force human takeover required<br/>reason=builder_timeout_n2_not_home]
+    D4 --> O1
+    D7 --> O1
+
+    E --> F{At home, all joints within reset threshold<br/>all joint speeds below home_speed_threshold<br/>and not already evaluated in this home stay?}
+    F -->|No| H[Continue action branch]
+    F -->|Yes| F1{home_detected_wait_s elapsed?}
+    F1 -->|No| F2[Keep inference running<br/>If leave home: reset timer]
+    F2 --> H
+    F1 -->|Yes| G[value_eval_pending=True]
+
+    G --> I[Request value from value model]
+    I --> J{Valid value?}
+    J -->|No| J1{At home?}
+    J1 -->|Yes| J2[Stop Program<br/>end_reason=value_model_unavailable_home]
+    J1 -->|No| J3{Role == builder?}
+    J3 -->|Yes| J4[Switch to recovery_n2<br/>prompt=collision_home_prompt]
+    J4 --> J5{Back home within n2_timeout_s?}
+    J5 -->|Yes| J2
+    J5 -->|No| J6[Force human takeover<br/>reason=value_model_unavailable_builder_not_home]
+    J3 -->|No| J7[Force human takeover<br/>reason=value_model_unavailable_not_home]
+    J6 --> O1
+    J7 --> O1
+    J -->|Yes| K{Success by role threshold?}
+    K -->|Builder: value >= task_complete| K1[task_success=True<br/>end_reason=value_success<br/>End loop immediately]
+    K -->|Destroyer: value <= back_to_start| K1
+    K -->|No| H
+
+    H --> L{Collision triggered?}
+    L -->|No| M[Policy/teleop action execution]
+    L -->|Yes| N[Pause inference + collision_count++]
+
+    N --> N1{Role == destroyer?}
+    N1 -->|Yes| O1[Force human takeover required immediately<br/>reason=collision_destroyer]
+    N1 -->|No, builder| O{collision_count >= N3?}
+    O -->|Yes| O1[Force human takeover required<br/>reason=collision_n3<br/>Wait Ctrl+Space]
+    O -->|No| P{>=N2?}
+    P -->|Yes| P1[flow_phase=recovery_n2<br/>prompt=collision_home_prompt]
+    P -->|No| Q{>=N1?}
+    Q -->|Yes| Q1[flow_phase=recovery_n1<br/>prompt=collision_safe_prompt]
+    Q -->|No| N2[Stay safety-paused<br/>Wait Ctrl+Enter or Ctrl+Space]
+    N2 --> N3{Ctrl+Enter?}
+    N3 -->|Yes| B
+    N3 -->|No| O1
+
+    O1 --> R{Ctrl+Space pressed?}
+    R -->|No| O1
+    R -->|Yes| S
+
+    S --> T{Ctrl+Space to exit takeover?}
+    T -->|No| S
+    T -->|Yes| U{Forced takeover active?}
+    U -->|No| V0[Exit takeover<br/>resume inference]
+    U -->|Yes| U0{At home?}
+    U0 -->|No| S1[Block exit<br/>human must drive to home]
+    U0 -->|Yes| U1{Reason is value-model failure?}
+    U1 -->|Yes| J2
+    U1 -->|No| V[Exit takeover<br/>clear force flags<br/>value_eval_pending=True]
+    V0 --> B
+    V --> B
+    M --> M1{Inference timeout?}
+    M1 -->|Yes| S
+    M1 -->|No| B
+
+    Z --> ZA[Label success/fail by role+home+value]
+    ZA --> ZB{At home?}
+    ZB -->|No| ZH[Call for human takeover<br/>move robot back home]
+    ZH --> ZB
+    ZB -->|Yes| ZC[Wait home stable for n2_stable_time_s]
+    ZC --> ZD[Advance role and prompt always]
+    ZD --> ZE[Next episode]

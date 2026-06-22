@@ -1,0 +1,57 @@
+import os
+
+REPO_ID = []
+ROOT_DIR = "/mnt/"  # Keep root path as /mnt
+sub_path = "oss_data/anyverse_human_data_record/arxx5_bimanual/insert_tube"
+tasks = sorted(os.listdir(os.path.join(ROOT_DIR, sub_path)))
+black_list = [
+    "grab_and_attach_tube.2_tube_in_order.60s.1128.batch.5",
+    "grab_and_attach_tube.2_tube_in_order.60s.1128.batch.6",
+    "grab_and_attach_tube.2_tube_in_order.60s.1204.batch.1",
+    "grab_and_attach_tube.2_tube_in_order.60s.1204.batch.2",
+    "grab_and_attach_tube.2_tube_in_order.60s.1204.batch.3",
+    "grab_and_attach_tube.2_tube_in_order.60s.1204.batch.4",
+    "grab_and_attach_tube.2_tube_in_order.60s.1204.batch.5",
+    "grab_and_attach_tube.2_tube_in_order.60s.1204.batch.6",
+    "grab_and_attach_tube.4_tube_in_order.120s.1205.batch.1",
+    "grab_and_attach_tube.4_tube_in_order.120s.1205.batch.2",
+    "left_grab_and_attach_tube.40s.approach.1121.batch.5",
+    "left_grab_and_attach_tube.40s.approach.1124.batch.1",
+    "left_grab_and_attach_tube.40s.approach.1124.batch.2",
+    "left_grab_and_attach_tube.40s.problematic.1121.batch.1",
+    "left_grab_and_attach_tube.40s.problematic.1121.batch.2",
+    "left_grab_and_attach_tube.40s.problematic.1121.batch.3",
+    "left_grab_and_attach_tube.40s.problematic.1121.batch.4",
+    "left_grab_and_attach_tube.45s.1119.batch.5",
+    "left_grab_and_attach_tube.45s.grab.1124.batch.3",
+    "left_grab_and_attach_tube.45s.grab.1124.batch.4",
+    "left_grab_and_attach_tube.45s.grab.1124.batch.5",
+    "left_grab_and_attach_tube.full_traj.40s.1125.batch.1",
+    "left_grab_and_attach_tube.grab.300s.1215.batch.1",
+    "left_grab_and_attach_tube.grab.300s.1215.batch.2",
+    "left_grab_and_attach_tube.grab.300s.1215.batch.3",
+    "left_grab_and_attach_tube.grab.300s.1215.batch.4",
+    "left_grab_and_attach_tube.grab.300s.1215.batch.5",
+    "left_grab_and_attach_tube.grab.300s.1215.batch.6",
+    "right_grab_and_attach_tube.40s.approach.1126.batch.4",
+    "right_grab_and_attach_tube.40s.approach.1126.batch.5",
+    "right_grab_and_attach_tube.40s.approach.1128.batch.1",
+    "right_grab_and_attach_tube.40s.approach.1128.batch.2",
+    "right_grab_and_attach_tube.40s.approach.1128.batch.3",
+    "right_grab_and_attach_tube.40s.approach.1128.batch.4",
+    "right_grab_and_attach_tube.45s.grab.1126.batch.6",
+    "right_grab_and_attach_tube.45s.grab.1127.batch.3",
+    "right_grab_and_attach_tube.45s.grab.1127.batch.4",
+    "right_grab_and_attach_tube.full_traj.40s.1125.batch.2",
+    "right_grab_and_attach_tube.full_traj.40s.1125.batch.3",
+    "right_grab_and_attach_tube.full_traj.40s.1125.batch.4",
+    "right_grab_and_attach_tube.full_traj.40s.1126.batch.1",
+    "right_grab_and_attach_tube.full_traj.40s.1126.batch.2",
+    "right_grab_and_attach_tube.full_traj.40s.1126.batch.3",
+    "right_grab_and_attach_tube.full_traj.40s.1127.batch.1",
+    "right_grab_and_attach_tube.full_traj.40s.1127.batch.2",
+    "right_grab_and_attach_tube.full_traj.40s.1127.batch.5",
+    "right_grab_and_attach_tube.full_traj.40s.1127.batch.6",
+]
+REPO_ID += [os.path.join(sub_path, task) for task in tasks if task not in black_list]
+print(REPO_ID)

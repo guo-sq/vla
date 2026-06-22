@@ -1,0 +1,20 @@
+{
+  "model": "seatbelt",
+  "checkpoint": "/mnt/oss_models/models_deploy/2603/seatbelt/pi05_base_seatbelt_data_0205_0312_horizon_50_trtc_single_self_play_recovery/pi05_base_seatbelt_data_0205_0312_horizon_50_trtc_single_self_play_recovery_exp/84999",
+  "checkpoint_dir": "/mnt/oss_models/models_deploy/2603/seatbelt/pi05_base_seatbelt_data_0205_0312_horizon_50_trtc_single_self_play_recovery/pi05_base_seatbelt_data_0205_0312_horizon_50_trtc_single_self_play_recovery_exp/84999",
+  "config": "pi05_base_seatbelt_data_0205_0312_horizon_50_trtc_single_self_play_recovery",
+  "dataset_root": "/mnt/oss_data/anyverse_human_data_record/arxx5_bimanual/seatbelt",
+  "repo_id": "seatbelt.single.insert_move.baichenglong.20260214.batch.1",
+  "evaluated_at": "2026-04-12T00:00:00Z",
+  "num_batches": 1,
+  "batch_size": 64,
+  "metrics": {
+    "mse": 0.000149,
+    "rmse": 0.012207,
+    "ade": 0.7800385510526964,
+    "fde": 0.15161374612926143,
+    "count": 64
+  },
+  "git_commit": "8fbc4a59",
+  "note": "MSE/RMSE refreshed after PR #103 fix (RTC delay=0 in open-loop eval); ade/fde retained from previous baseline as they are not asserted"
+}

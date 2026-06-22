@@ -1,0 +1,149 @@
+{
+    "schema_version": "1",
+    "session_id": "seatbelt.self_play.v1",
+
+    "robot": {
+        "type": "arxx5_bimanual",
+        "id": "2"
+    },
+
+    "hardware_meta": {
+        "end_effector": {
+            "left":  {"type": "gripper", "model": "long"},
+            "right": {"type": "gripper", "model": "long"}
+        },
+        "cameras": {
+            "head":        {"type": "opencv", "index_or_path": 10, "width": 640, "height": 480, "fps": 30},
+            "left_wrist":  {"type": "opencv", "index_or_path": 16, "width": 640, "height": 480, "fps": 30},
+            "right_wrist": {"type": "opencv", "index_or_path": 4,  "width": 640, "height": 480, "fps": 30}
+        }
+    },
+
+    "collection_meta": {
+        "operator_name": "yangjiaxu",
+        "adversary_operator": "",
+        "is_adversary": true,
+        "is_self_play": true,
+        "acting_arms": ["left", "right"],
+        "site_location": "beijing_7F",
+        "city": "beijing",
+        "mode": "self_play"
+    },
+
+    "task_meta": {
+        "task_name": "seatbelt",
+        "task_stage": {"mode": "full", "stages": ""},
+        "objects": {}
+    },
+
+    "task_description": "Self-play seatbelt: builder hangs the seatbelt with right hand; destroyer takes it off.",
+
+    "task_spec": {
+        "task_id": "seatbelt",
+        "roles": {
+            "builder": {
+                "prompt": "Hang the seatbelt with right hand under {speed} seconds.",
+                "max_time_s": 60,
+                "action_mask": "right_hand_only",
+                "timeout_recovery": "recovery_prompt",
+                "home_wait_before_end_s": 3,
+                "speed_variation": {
+                    "lower_bound_s": 12,
+                    "upper_bound_s": 13,
+                    "step_s": 1
+                },
+                "success_when": {
+                    "at_home": true,
+                    "value_gte": -0.3,
+                    "speed_threshold": 0.1
+                }
+            },
+            "destroyer": {
+                "prompt": "Take the seatbelt off under 20 seconds.",
+                "max_time_s": 60,
+                "action_mask": "left_hand_only",
+                "timeout_recovery": "force_human_takeover",
+                "home_wait_before_end_s": 5,
+                "success_when": {
+                    "at_home": true,
+                    "value_lte": -0.97,
+                    "speed_threshold": 0.1
+                }
+            }
+        },
+        "policy_server": {
+            "host": "localhost",
+            "port": 8000
+        },
+        "value_model": {
+            "host": "10.17.0.51",
+            "port": 8000
+        },
+        "reset": {
+            "reference_pose": [-0.00247955322265625, 0.00896453857421875, 0.00324249267578125, -0.00476837158203125, 0.00400543212890625, -0.00286102294921875, 0.15, -0.00057220458984375, -0.00171661376953125, 0.00553131103515625, -0.00934600830078125, -0.00286102294921875, 0.01430511474609375, 0.15],
+            "threshold": 0.15,
+            "speed_threshold": 0.1,
+            "home_wait_s": 0
+        },
+        "safety": {
+            "collision_current_bounds": {
+                "7":  [-4,   null],
+                "9":  [-1.5, null],
+                "10": [-2,   null]
+            },
+            "recovery": {
+                "n1": {
+                    "threshold": 1,
+                    "prompt": "Collision happened. Return to a safe position.",
+                    "execute_time_s": 5.0,
+                    "stable_time_s": 0.5,
+                    "speed_threshold": 0.1,
+                    "timeout_s": 12.0
+                },
+                "n2": {
+                    "threshold": 3,
+                    "prompt": "Back to home position.",
+                    "execute_time_s": 5.0,
+                    "stable_time_s": 0.5,
+                    "speed_threshold": 0.1,
+                    "timeout_s": 15.0
+                },
+                "n3": {
+                    "threshold": 4,
+                    "action": "force_human_takeover"
+                }
+            }
+        }
+    },
+
+    "recording": {
+        "num_episodes": 80,
+        "episode_time_s": 60,
+        "reset_time_s": 0,
+        "fps": 30,
+        "video": true,
+        "display_data": true,
+        "play_sounds": true,
+        "enable_log_say": true,
+        "enable_logging": true,
+        "progress_print_interval_s": 1.0,
+        "auto_success": false,
+        "resume": false,
+        "debug": false
+    },
+
+    "inference": {
+        "mode": "async",
+        "model_name": "recap_v1",
+        "infer_interval": 10,
+        "default_infer_delay": 2,
+        "action_horizon": 50,
+        "inference_speedup": 1.3
+    },
+    "intervention": {},
+    "self_play": {
+        "max_total_time_s": null,
+        "infer_only": false
+    },
+    "subtask": {}
+}

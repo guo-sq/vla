@@ -1,0 +1,14 @@
+# Seatbelt scenario: positive/negative dataset classification
+# Positive = successful seatbelt installation (hang)
+# Negative = seatbelt removal (take_off)
+
+positive_datasets:
+  - "seatbelt.single.hang.*"
+  - "seatbelt.single.hang_move.*"
+  - "seatbelt.single.hang_continuous_*"
+
+negative_datasets:
+  - "seatbelt.single.take_off_move.*"
+  - "seatbelt.single.take_off.*"
+
+default_type: "positive"

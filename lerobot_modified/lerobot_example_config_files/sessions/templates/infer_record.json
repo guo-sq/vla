@@ -1,0 +1,132 @@
+{
+    "_doc": "Template: run a trained policy AND save rollouts to disk. Operator stands by to intervene when the policy gets stuck. Use this for evaluation runs that you also want to fold back into the training set. Underscore-prefixed keys (_doc, _comment_*) are inline annotations stripped by the validator.",
+
+    "schema_version": "1",
+    "session_id": "FILL_ME_IN.session.v1",
+    "_comment_session_id": "Free-form unique label. Convention: '<task>.<mode>.v<n>' e.g. 'pack_socks.infer_record.v1'.",
+
+    "robot": {
+        "type": "FILL_ME_IN",
+        "_comment_type": "Options: 'arxx5_bimanual', 'bi_piper_follower', 'so100_follower', 'so101_follower', 'koch_follower', 'piper'.",
+        "id": "FILL_ME_IN",
+        "_comment_id": "Free-form id string. ARX convention: stringified physical ID, e.g. '2', '5', '8'."
+    },
+
+    "hardware_meta": {
+        "_comment_cameras": "Same names + indices as the rig you trained the policy on; mismatch = wrong frames to the policy.",
+        "end_effector": {
+            "left":  {"type": "gripper", "model": "long"},
+            "right": {"type": "gripper", "model": "long"}
+        },
+        "cameras": {
+            "head":        {"type": "opencv", "index_or_path": 0, "width": 640, "height": 480, "fps": 30},
+            "left_wrist":  {"type": "opencv", "index_or_path": 0, "width": 640, "height": 480, "fps": 30},
+            "right_wrist": {"type": "opencv", "index_or_path": 0, "width": 640, "height": 480, "fps": 30}
+        }
+    },
+
+    "collection_meta": {
+        "operator_name": "FILL_ME_IN",
+        "_comment_operator_name": "Human supervising the run (ready to intervene). Lands in dataset metadata + batch repo_id.",
+        "adversary_operator": "",
+        "is_adversary": false,
+        "is_self_play": false,
+        "acting_arms": ["left", "right"],
+        "_comment_acting_arms": "Which arm(s) the policy drives during this session. Options: ['left', 'right'], ['left'], or ['right']. Should match the policy's training-time scope (e.g. a right-only seatbelt policy → ['right']).",
+        "site_location": "beijing_6F",
+        "city": "beijing",
+        "mode": "infer_record",
+        "_comment_mode": "Must be 'infer_record' for this template."
+    },
+
+    "task_meta": {
+        "task_name": "FILL_ME_IN",
+        "_comment_task_name": "Lowercase snake_case identifier matching the policy's training task.",
+        "task_stage": {"mode": "full", "stages": ""},
+        "objects": {},
+        "_comment_objects": "Free-form {name: {attr: value}} for prompt placeholders, e.g. {socks.color}."
+    },
+
+    "task_description": "FILL_ME_IN — describe the scene + what the policy is expected to do.",
+
+    "task_spec": {
+        "task_id": "FILL_ME_IN",
+        "_comment_task_id": "Usually identical to task_meta.task_name.",
+        "roles": {
+            "operator": {
+                "prompt": "FILL_ME_IN — short imperative the policy was trained on, e.g. 'Pack the socks.'",
+                "_comment_prompt": "The initial prompt sent to the policy server every chunk. Supports {a.b.c} substitution from task_meta.objects + collection_meta. Remains active until you press a Ctrl+<key> shortcut from the 'prompts' block below; each episode starts back on this default.",
+                "max_time_s": null,
+                "_comment_max_time_s": "Per-role timeout. null in infer_record (cfg.dataset.episode_time_s is the actual stop)."
+            }
+        },
+        "policy_server": {
+            "host": "localhost",
+            "port": 8001,
+            "_comment_policy_server": "Where the policy server is reachable. host can be 'localhost' (same box) or a LAN IP. port matches what the server is bound to (8000 / 8001 are common). Required for any infer mode."
+        },
+        "prompts": {
+            "_comment_prompts": "Optional. Live prompt-switching map: pressing Ctrl+<key> during a rollout swaps the policy's prompt to the matching string starting on the next chunk. Keys MUST be a single character (digit or letter); multi-char keys are rejected at load. Omit the block (or leave it empty) to disable live switching. In infer_record, the active prompt is written into each frame's 'task' column (so the dataset's per-episode 'tasks' list will contain every variant used), and an ordered 'prompt_switches' timeline of {step, t_s, prompt} entries is appended to episode metadata in episodes.jsonl. Switches do NOT survive episode boundaries — each new episode starts on roles.operator.prompt; use Ctrl+<key> again to swap mid-episode. Common patterns: testing prompt-sensitivity of a checkpoint, mid-rollout sub-skill staging, or marking the dataset with the specific variant that worked.",
+            "1": "FILL_ME_IN — first variant. Convention: 'Ctrl+1' returns to the default (mirror roles.operator.prompt).",
+            "2": "FILL_ME_IN — second variant.",
+            "3": "FILL_ME_IN — third variant. Add or drop entries freely; any single-character key works (digits and letters)."
+        }
+    },
+
+    "recording": {
+        "num_episodes": 15,
+        "_comment_num_episodes": "How many rollouts to evaluate / record.",
+        "episode_time_s": 300,
+        "_comment_episode_time_s": "Per-rollout timeout. Set generously — the policy may stall and the operator decides when to abort.",
+        "reset_time_s": 5,
+        "_comment_reset_time_s": "Sleep between rollouts so the operator can reset the scene.",
+        "fps": 30,
+        "video": true,
+        "display_data": true,
+        "play_sounds": true,
+        "enable_log_say": true,
+        "enable_logging": true,
+        "progress_print_interval_s": 1.0,
+        "auto_success": false,
+        "_comment_auto_success": "true skips the y/n confirmation. Useful when the policy reliably halts at the end of an episode.",
+        "resume": false,
+        "debug": false,
+        "data_root": "$HOME/lerobot_data_collection"
+    },
+
+    "inference": {
+        "_comment_inference": "All inference knobs are listed below with their defaults so the operator can tune in place. Defaults at lerobot/recording/task/session_config.py:INFERENCE_DEFAULTS.",
+        "mode": "async",
+        "_comment_mode": "'async' = inference runs in parallel with control; recommended for chunk_size > 1. 'sync' = block on every inference call (debug / latency-sensitive).",
+        "model_name": "FILL_ME_IN",
+        "_comment_model_name": "Free-form checkpoint label (e.g. 'seatbelt_recap_v1'). Lands in meta.info.infer_meta so downstream readers can group episodes by model. Use \"\" if truly anonymous.",
+        "action_horizon": 50,
+        "_comment_action_horizon": "Number of action steps per inference chunk. Must match the policy's training value (pi0.5 default = 50; pi06 varies).",
+        "infer_interval": 20,
+        "_comment_infer_interval": "Control ticks between inference requests. Effective fps_inference = fps / infer_interval. For 30 fps + infer_interval=20: a new chunk every ~0.67s. Lower = more responsive, more compute load.",
+        "auto_infer_interval": true,
+        "_comment_auto_infer_interval": "Only active when inference_speedup > 1. Auto-measures round-trip latency during warmup and picks the smallest interval that fits. Leave true; harmless at speedup=1.",
+        "default_infer_delay": 0,
+        "_comment_default_infer_delay": "Action prefix offset when inference is in flight. >0 lets the policy work on actions further ahead in the chunk; matches RTC paper.",
+        "inference_speedup": 1.0,
+        "_comment_inference_speedup": "Play actions faster than real time. 1.0 = real time. 1.5 = 50% faster. Only safe on policies trained to handle it.",
+        "fusion_type": "linear",
+        "_comment_fusion_type": "How overlapping action chunks are blended. Options: 'linear', 'exponential'.",
+        "fusion_window": 0,
+        "_comment_fusion_window": "Number of overlapping steps to blend. 0 = hard switch (no blending).",
+        "fusion_exp_decay": 2.0,
+        "_comment_fusion_exp_decay": "Decay rate for fusion_type='exponential'. Higher = sharper transition.",
+        "smooth_sigma": 0.0,
+        "_comment_smooth_sigma": "Gaussian smoothing on action chunks. 0 = none.",
+        "transition_steps": 15,
+        "_comment_transition_steps": "Steps for action-source switch (e.g. teleop → policy in intervention).",
+        "log_action_chunks": false,
+        "_comment_log_action_chunks": "Dump every action chunk to the run log. Heavy; use for debugging fusion / timing.",
+        "persist_inference_log": false,
+        "_comment_persist_inference_log": "Append every inference call (submit/complete timestamps, latency_ms, raw pre-fusion action chunk, prompt, RTC delay, role) to <dataset>/meta/inference_log.parquet. Use for latency-tail analysis, fusion-vs-raw audits, or 'policy intent' RL training. Adds ~600 KB/min for action_horizon=50, action_dim=32 — negligible next to video. Off by default; turn on only when you intend to consume the log. No-op in pure infer mode (no dataset to colocate with). Read back with lerobot.datasets.inference_log.read_inference_log."
+    },
+    "intervention": {},
+    "_comment_intervention": "Empty in infer_record. Intervention knobs apply when an operator can take over mid-episode; see self_play.json for the full set.",
+    "self_play": {},
+    "subtask": {}
+}

@@ -1,0 +1,21 @@
+ROOT_DIR = "/mnt/"
+REPO_ID = [
+    "oss_data/lerobot/aloha_mobile_cabinet",
+    "oss_data/lerobot/aloha_mobile_chair",
+    "oss_data/lerobot/aloha_mobile_elevator",
+    "oss_data/lerobot/aloha_mobile_shrimp",
+    "oss_data/lerobot/aloha_mobile_wash_pan",
+    "oss_data/lerobot/aloha_mobile_wipe_wine",
+    # "oss_data/lerobot/aloha_sim_transfer_cube_human",
+    "oss_data/lerobot/aloha_static_candy",
+    "oss_data/lerobot/aloha_static_coffee",
+    "oss_data/lerobot/aloha_static_cups_open",
+    "oss_data/lerobot/aloha_static_pingpong_test",
+    "oss_data/lerobot/aloha_static_pro_pencil",
+    "oss_data/lerobot/aloha_static_screw_driver",
+    "oss_data/lerobot/aloha_static_towel",
+    ## "oss_data/lerobot/aloha_static_ziploc_slide",
+    ## "oss_data/lerobot/aloha_static_tape",
+    ## "oss_data/lerobot/aloha_static_vinh_cup",
+    ## "oss_data/lerobot/aloha_static_vinh_cup_left",
+]

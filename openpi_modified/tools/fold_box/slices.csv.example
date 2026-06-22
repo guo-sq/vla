@@ -1,0 +1,28 @@
+# slices.csv — slice_dataset.py --batch-file 的输入模板
+#
+# 用法:
+#   python tools/fold_box/slice_dataset.py --batch-file tools/fold_box/slices.csv
+#
+# 必填列: src, dst, episode, start_sec, end_sec
+# 可选列:
+#   data_path   留空用默认:
+#               /mnt/oss_data/anyverse_human_data_record/arxx5_bimanual/fold_box/close_the_flap/infer/
+#               src/dst 是相对路径,会自动拼到 data_path 下
+#               (开头的 '/' 只当分隔符用,不会被识别成绝对路径)
+#   model_path  写进新数据集 meta/slice_info.json
+#
+# dst 尾部无需写时长,脚本会按 fps 自动插入(保留原有后缀):
+#   .ep4.good  ->  .ep4.4s.good
+#   .ep4.bad   ->  .ep4.4s.bad
+# '#' 开头的行是注释,空行也会被跳过
+#
+# 示例(0422 batch.1 两个切片,用默认 data_path):
+src,dst_dir,episode,start_sec,end_sec,label
+raw_infer/close_the_box_infer.origin.pi05_base_finetune_box_recap_pt_0420_close.1w9.6000s.20260422.batch.1,bad21/,0,52,54,bad
+raw_infer/close_the_box_infer.origin.pi05_base_finetune_box_recap_pt_0420_close.1w9.6000s.20260422.batch.1,good21-24/,1,47,52,good
+raw_infer/close_the_box_infer.origin.pi05_base_finetune_box_recap_pt_0420_close.1w9.6000s.20260422.batch.1,bad24/,3,55,60,bad
+raw_infer/close_the_box_infer.origin.pi05_base_finetune_box_recap_pt_0420_close.1w9.6000s.20260422.batch.1,bad21/,4,50,52,bad
+raw_infer/close_the_box_infer.origin.pi05_base_finetune_box_recap_pt_0420_close.1w9.6000s.20260422.batch.2,good21-24/,1,55,60,good
+raw_infer/close_the_box_infer.origin.pi05_base_finetune_box_recap_pt_0420_close.1w9.6000s.20260422.batch.2,good21-24/,2,52,58,good
+raw_infer/close_the_box_infer.origin.pi05_base_finetune_box_recap_pt_0420_close.1w9.6000s.20260422.batch.2,bad24/,3,55,59,bad
+raw_infer/close_the_box_infer.origin.pi05_base_finetune_box_recap_pt_0420_close.1w9.6000s.20260422.batch.2,bad21/,4,51,53,bad

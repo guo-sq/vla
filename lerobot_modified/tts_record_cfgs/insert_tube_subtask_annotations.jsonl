@@ -1,0 +1,6 @@
+{"subtask_index": 0, "abbrevation": "grab_tube", "subtask": "Move grab_wrist gripper to directly above the tube and grab the tube"}
+{"subtask_index": 1, "abbrevation": "pickup_tube", "subtask": "Pick up the tube with grab_wrist gripper and move to the center of the tray"}
+{"subtask_index": 2, "abbrevation": "switch_tube", "subtask": "Move attach_wrist gripper to the grab_wrist, grab the tube with attach_wrist gripper, open grab_wrist gripper"}
+{"subtask_index": 3, "abbrevation": "lift_tube", "subtask": "Move the tube under the insertion hole with attch_wrist gripper"}
+{"subtask_index": 4, "abbrevation": "insert_tube", "subtask": "Moves attach_wrist gripper upward to insert the tube into the insertion hole"}
+{"subtask_index": 5, "abbrevation": "release_tube", "subtask": "Open attach_wrist gripper"}

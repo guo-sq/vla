@@ -1,0 +1,513 @@
+name: CI Pipeline
+
+concurrency:
+  group: ci-pipeline-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      openloop_fast_checkpoint_dir:
+        description: Checkpoint directory for fast openloop evaluation
+        required: false
+        default: '/mnt/data/heyuan/openpi_modified/checkpoints/cfg_pi0.5_28_dim.all_public_datasets.with_updated_robomind2/cfg_pi0.5_28_dim.all_public_datasets.with_updated_robomind2_exp/10000'
+        type: string
+      openloop_fast_cpfs_root:
+        description: CPFS root for minitest dataset
+        required: false
+        default: '/mnt/workspace/openpi_minitest'
+        type: string
+
+env:
+  GIT_LFS_SKIP_SMUDGE: true
+  OPENPI_SHARED_VENV_PATH: /mnt/workspace/heyuan/ci_cd/openpi_modified/.venv
+  OPENPI_SHARED_HOME: /root
+  OPENPI_FFMPEG_LIB_DIR: /root/miniconda3/envs/openpi-ci/lib
+  OPENPI_TEST_HEARTBEAT_INTERVAL: '15'
+
+jobs:
+  black-check:
+    name: Run Black Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Collect changed Python files
+        id: changed-files
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
+          CURRENT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            target_range="${PR_HEAD_SHA}^!"
+            if ! git rev-parse --verify "${PR_HEAD_SHA}^{commit}" >/dev/null 2>&1; then
+              git fetch --no-tags --depth=1 origin "$PR_HEAD_SHA"
+            fi
+          elif [[ "$EVENT_NAME" == "push" && "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]]; then
+            target_range="${BEFORE_SHA}..${CURRENT_SHA}"
+          else
+            target_range="${CURRENT_SHA}^!"
+          fi
+
+          mapfile -t files < <(
+            git diff --name-only "$target_range" -- \
+              ':(glob)src/**/*.py' \
+              ':(glob)tests/**/*.py' \
+              ':(glob)scripts/**/*.py' \
+              ':(glob)packages/**/*.py' \
+              | sort -u
+          )
+
+          if ((${#files[@]} == 0)); then
+            echo "any_changed=false" >> "$GITHUB_OUTPUT"
+            echo "all_changed_files=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          {
+            echo "any_changed=true"
+            echo "all_changed_files=${files[*]}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Run Black check
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: uvx --from black==24.10.0 black --check --diff ${{ steps.changed-files.outputs.all_changed_files }}
+
+      - name: Skip when no Python changes
+        if: steps.changed-files.outputs.any_changed != 'true'
+        run: echo "No Python changes to lint."
+
+  ruff-check:
+    name: Run Ruff Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Collect changed Python files
+        id: changed-files
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
+          CURRENT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            target_range="${PR_HEAD_SHA}^!"
+            if ! git rev-parse --verify "${PR_HEAD_SHA}^{commit}" >/dev/null 2>&1; then
+              git fetch --no-tags --depth=1 origin "$PR_HEAD_SHA"
+            fi
+          elif [[ "$EVENT_NAME" == "push" && "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]]; then
+            target_range="${BEFORE_SHA}..${CURRENT_SHA}"
+          else
+            target_range="${CURRENT_SHA}^!"
+          fi
+
+          mapfile -t files < <(
+            git diff --name-only "$target_range" -- \
+              ':(glob)src/**/*.py' \
+              ':(glob)tests/**/*.py' \
+              ':(glob)scripts/**/*.py' \
+              ':(glob)packages/**/*.py' \
+              | sort -u
+          )
+
+          if ((${#files[@]} == 0)); then
+            echo "any_changed=false" >> "$GITHUB_OUTPUT"
+            echo "all_changed_files=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          {
+            echo "any_changed=true"
+            echo "all_changed_files=${files[*]}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Run Ruff check
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: uvx --from ruff==0.8.6 ruff check --force-exclude ${{ steps.changed-files.outputs.all_changed_files }}
+
+      - name: Skip when no Python changes
+        if: steps.changed-files.outputs.any_changed != 'true'
+        run: echo "No Python changes to lint."
+
+  test-smoke:
+    name: Smoke Tests
+    runs-on: self-hosted
+    needs: [black-check, ruff-check]
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Initialize CI temp root
+        shell: bash
+        run: |
+          set -euo pipefail
+          target_root="$RUNNER_TEMP/openpi-ci-oe-${GITHUB_RUN_ID}"
+          alias_root="/dev/shm/oc-oe-${GITHUB_RUN_ID}"
+          mkdir -p "$target_root"
+          rm -rf "$alias_root"
+          ln -s "$target_root" "$alias_root"
+          echo "OPENPI_CI_TMP_TARGET=$target_root" >> "$GITHUB_ENV"
+          echo "OPENPI_CI_TMP_ROOT=$alias_root" >> "$GITHUB_ENV"
+
+      - name: Verify local environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d "$GITHUB_WORKSPACE"
+          test -d "$GITHUB_WORKSPACE/src"
+          test -d "$GITHUB_WORKSPACE/packages/openpi-client/src"
+          test -x "$OPENPI_SHARED_VENV_PATH/bin/python"
+          test -d "$OPENPI_SHARED_HOME/.cache/openpi"
+          test -f "$OPENPI_SHARED_HOME/.cache/openpi/big_vision/paligemma_tokenizer.model"
+          test -f "$OPENPI_FFMPEG_LIB_DIR/libavformat.so.61"
+          mkdir -p "$OPENPI_CI_TMP_ROOT"
+
+      - name: Prune stale CI temp directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          find "$OPENPI_CI_TMP_ROOT" -mindepth 1 -maxdepth 1 -type d \( -name 'openpi-runtime-*' -o -name 'openpi-pytest-cache-*' -o -name 'rt-*' -o -name 'pc-*' \) -mtime +1 -exec rm -rf {} +
+
+      - name: Run smoke tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
+          export OPENPI_RUNTIME_ROOT="$OPENPI_CI_TMP_ROOT/openpi-runtime-${GITHUB_RUN_ID}-${GITHUB_JOB}"
+          source scripts/ci/setup_runtime_env.sh "$OPENPI_RUNTIME_ROOT" "$OPENPI_SHARED_HOME"
+          export PATH="$OPENPI_SHARED_VENV_PATH/bin:$PATH"
+          export LD_LIBRARY_PATH="$OPENPI_FFMPEG_LIB_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          export PYTHONPATH="$GITHUB_WORKSPACE:$GITHUB_WORKSPACE/src:$GITHUB_WORKSPACE/packages/openpi-client/src${PYTHONPATH:+:$PYTHONPATH}"
+          export PYTEST_ADDOPTS="-o cache_dir=$OPENPI_CI_TMP_ROOT/openpi-pytest-cache-${GITHUB_RUN_ID}"
+          bash tests/run_tests.sh smoke -k 'not config_path2'
+
+      - name: Clean CI temp directories
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf \
+            "$OPENPI_CI_TMP_ROOT/openpi-runtime-${GITHUB_RUN_ID}-${GITHUB_JOB}" \
+            "$OPENPI_CI_TMP_ROOT/openpi-pytest-cache-${GITHUB_RUN_ID}"
+
+  test-config-loss-drift:
+    name: Config Loss Drift
+    runs-on: self-hosted
+    needs: [black-check, ruff-check]
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Initialize CI temp root
+        shell: bash
+        run: echo "OPENPI_CI_TMP_ROOT=$RUNNER_TEMP/openpi-ci" >> "$GITHUB_ENV"
+
+      - name: Verify local environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d "$GITHUB_WORKSPACE"
+          test -d "$GITHUB_WORKSPACE/src"
+          test -d "$GITHUB_WORKSPACE/packages/openpi-client/src"
+          test -x "$OPENPI_SHARED_VENV_PATH/bin/python"
+          test -d "$OPENPI_SHARED_HOME/.cache/openpi"
+          test -f "$OPENPI_SHARED_HOME/.cache/openpi/big_vision/paligemma_tokenizer.model"
+          test -f "$OPENPI_FFMPEG_LIB_DIR/libavformat.so.61"
+          mkdir -p "$OPENPI_CI_TMP_ROOT"
+
+      - name: Prune stale CI temp directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          find "$OPENPI_CI_TMP_ROOT" -mindepth 1 -maxdepth 1 -type d \( -name 'openpi-runtime-*' -o -name 'openpi-pytest-cache-*' \) -mtime +1 -exec rm -rf {} +
+
+      - name: Run config loss drift check
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
+          export OPENPI_RUNTIME_ROOT="$OPENPI_CI_TMP_ROOT/openpi-runtime-${GITHUB_RUN_ID}-${GITHUB_JOB}"
+          source scripts/ci/setup_runtime_env.sh "$OPENPI_RUNTIME_ROOT" "$OPENPI_SHARED_HOME"
+          export PATH="$OPENPI_SHARED_VENV_PATH/bin:$PATH"
+          export LD_LIBRARY_PATH="$OPENPI_FFMPEG_LIB_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          export PYTHONPATH="$GITHUB_WORKSPACE:$GITHUB_WORKSPACE/src:$GITHUB_WORKSPACE/packages/openpi-client/src${PYTHONPATH:+:$PYTHONPATH}"
+          export PYTEST_ADDOPTS="-o cache_dir=$OPENPI_CI_TMP_ROOT/openpi-pytest-cache-${GITHUB_RUN_ID}-config-loss-drift"
+          bash tests/run_tests.sh config-loss-drift
+
+      - name: Clean CI temp directories
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf \
+            "$OPENPI_CI_TMP_ROOT/openpi-runtime-${GITHUB_RUN_ID}-${GITHUB_JOB}" \
+            "$OPENPI_CI_TMP_ROOT/openpi-pytest-cache-${GITHUB_RUN_ID}-config-loss-drift"
+
+  test-suite:
+    name: Test Suite (full)
+    runs-on: self-hosted
+    needs: [black-check, ruff-check, test-smoke, test-config-loss-drift, test-openloop-eval, test-openloop-fast]
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Initialize CI temp root
+        shell: bash
+        run: echo "OPENPI_CI_TMP_ROOT=$RUNNER_TEMP/openpi-ci" >> "$GITHUB_ENV"
+
+      - name: Verify local environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d "$GITHUB_WORKSPACE"
+          test -d "$GITHUB_WORKSPACE/src"
+          test -d "$GITHUB_WORKSPACE/packages/openpi-client/src"
+          test -x "$OPENPI_SHARED_VENV_PATH/bin/python"
+          test -d "$OPENPI_SHARED_HOME/.cache/openpi"
+          test -f "$OPENPI_SHARED_HOME/.cache/openpi/big_vision/paligemma_tokenizer.model"
+          test -f "$OPENPI_FFMPEG_LIB_DIR/libavformat.so.61"
+          mkdir -p "$OPENPI_CI_TMP_ROOT"
+
+      - name: Prune stale CI temp directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          find "$OPENPI_CI_TMP_ROOT" -mindepth 1 -maxdepth 1 -type d \( -name 'openpi-runtime-*' -o -name 'openpi-pytest-cache-*' \) -mtime +1 -exec rm -rf {} +
+
+      - name: Run test suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
+          export OPENPI_RUNTIME_ROOT="$OPENPI_CI_TMP_ROOT/openpi-runtime-${GITHUB_RUN_ID}-${GITHUB_JOB}"
+          source scripts/ci/setup_runtime_env.sh "$OPENPI_RUNTIME_ROOT" "$OPENPI_SHARED_HOME"
+          export PATH="$OPENPI_SHARED_VENV_PATH/bin:$PATH"
+          export LD_LIBRARY_PATH="$OPENPI_FFMPEG_LIB_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          export PYTHONPATH="$GITHUB_WORKSPACE:$GITHUB_WORKSPACE/src:$GITHUB_WORKSPACE/packages/openpi-client/src${PYTHONPATH:+:$PYTHONPATH}"
+          export PYTEST_ADDOPTS="-o cache_dir=$OPENPI_CI_TMP_ROOT/openpi-pytest-cache-${GITHUB_RUN_ID}-full"
+          bash tests/run_tests.sh full
+
+      - name: Clean CI temp directories
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf \
+            "$OPENPI_CI_TMP_ROOT/openpi-runtime-${GITHUB_RUN_ID}-${GITHUB_JOB}" \
+            "$OPENPI_CI_TMP_ROOT/openpi-pytest-cache-${GITHUB_RUN_ID}-full"
+
+  test-openloop-eval:
+    name: Openloop Evaluation
+    runs-on: [self-hosted, linux, x64]
+    needs: [black-check, ruff-check, test-smoke, test-config-loss-drift]
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Initialize CI temp root
+        shell: bash
+        run: echo "OPENPI_CI_TMP_ROOT=$RUNNER_TEMP/openpi-ci" >> "$GITHUB_ENV"
+
+      - name: Verify local environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d "$GITHUB_WORKSPACE"
+          test -d "$GITHUB_WORKSPACE/src"
+          test -d "$GITHUB_WORKSPACE/packages/openpi-client/src"
+          test -x "$OPENPI_SHARED_VENV_PATH/bin/python"
+          test -d "$OPENPI_SHARED_HOME/.cache/openpi"
+          test -f "$OPENPI_SHARED_HOME/.cache/openpi/big_vision/paligemma_tokenizer.model"
+          test -f "$OPENPI_FFMPEG_LIB_DIR/libavformat.so.61"
+          mkdir -p "$OPENPI_CI_TMP_ROOT"
+
+      - name: Prune stale CI temp directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          find "$OPENPI_CI_TMP_ROOT" -mindepth 1 -maxdepth 1 -type d \( -name 'openpi-runtime-*' -o -name 'openpi-pytest-cache-*' \) -mtime +1 -exec rm -rf {} +
+
+      - name: Run openloop consistency integration test
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
+          runtime_root="$OPENPI_CI_TMP_ROOT/rt-oe-${GITHUB_RUN_ID}"
+          pytest_cache_dir="$OPENPI_CI_TMP_ROOT/pc-oe-${GITHUB_RUN_ID}"
+          export OPENPI_RUNTIME_ROOT="$runtime_root"
+          source scripts/ci/setup_runtime_env.sh "$OPENPI_RUNTIME_ROOT" "$OPENPI_SHARED_HOME"
+          export PATH="$OPENPI_SHARED_VENV_PATH/bin:$PATH"
+          export LD_LIBRARY_PATH="$OPENPI_FFMPEG_LIB_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          export PYTHONPATH="$GITHUB_WORKSPACE:$GITHUB_WORKSPACE/src:$GITHUB_WORKSPACE/packages/openpi-client/src${PYTHONPATH:+:$PYTHONPATH}"
+          export PYTEST_ADDOPTS="-o cache_dir=$pytest_cache_dir"
+          export WANDB_MODE=disabled
+          "$OPENPI_SHARED_VENV_PATH/bin/python" -m pytest -q \
+            tests/integration/test_openloop_eval_consistency.py::TestOpenloopEvalConsistency \
+            -m manual -v
+
+      - name: Clean CI temp directories
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmp_root="${OPENPI_CI_TMP_ROOT:-}"
+          tmp_target="${OPENPI_CI_TMP_TARGET:-}"
+          if [[ -n "$tmp_root" ]]; then
+            rm -rf \
+              "$tmp_root/rt-oe-${GITHUB_RUN_ID}" \
+              "$tmp_root/pc-oe-${GITHUB_RUN_ID}" \
+              "$tmp_root"
+          fi
+          if [[ -n "$tmp_target" ]]; then
+            rm -rf "$tmp_target"
+          fi
+
+  test-openloop-fast:
+    name: Fast Openloop Eval (Minitest)
+    runs-on: [self-hosted, linux, x64]
+    needs: [black-check, ruff-check, test-smoke, test-config-loss-drift]
+    timeout-minutes: 15
+    env:
+      OPENLOOP_FAST_CHECKPOINT_DIR: ${{ inputs.openloop_fast_checkpoint_dir != '' && inputs.openloop_fast_checkpoint_dir || '/mnt/data/heyuan/openpi_modified/checkpoints/cfg_pi0.5_28_dim.all_public_datasets.with_updated_robomind2/cfg_pi0.5_28_dim.all_public_datasets.with_updated_robomind2_exp/10000' }}
+      OPENLOOP_FAST_CPFS_ROOT: ${{ inputs.openloop_fast_cpfs_root != '' && inputs.openloop_fast_cpfs_root || '/mnt/workspace/openpi_minitest' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Initialize CI temp root
+        shell: bash
+        run: |
+          set -euo pipefail
+          target_root="$RUNNER_TEMP/openpi-ci-of-${GITHUB_RUN_ID}"
+          alias_root="/dev/shm/oc-of-${GITHUB_RUN_ID}"
+          mkdir -p "$target_root"
+          rm -rf "$alias_root"
+          ln -s "$target_root" "$alias_root"
+          echo "OPENPI_CI_TMP_TARGET=$target_root" >> "$GITHUB_ENV"
+          echo "OPENPI_CI_TMP_ROOT=$alias_root" >> "$GITHUB_ENV"
+
+      - name: Validate fast openloop inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          checkpoint_dir="$OPENLOOP_FAST_CHECKPOINT_DIR"
+          cpfs_root="$OPENLOOP_FAST_CPFS_ROOT"
+
+          [[ -n "$checkpoint_dir" ]] || { echo "checkpoint_dir is required" >&2; exit 2; }
+          [[ -n "$cpfs_root" ]] || { echo "cpfs_root is required" >&2; exit 2; }
+          [[ "$checkpoint_dir" = /* ]] || { echo "checkpoint_dir must be an absolute path" >&2; exit 2; }
+          [[ "$cpfs_root" = /* ]] || { echo "cpfs_root must be an absolute path" >&2; exit 2; }
+          [[ "$checkpoint_dir" == /mnt/* ]] || { echo "checkpoint_dir must stay under /mnt" >&2; exit 2; }
+          [[ "$cpfs_root" == /mnt/* ]] || { echo "cpfs_root must stay under /mnt" >&2; exit 2; }
+          [[ -d "$checkpoint_dir" ]] || { echo "checkpoint_dir does not exist: $checkpoint_dir" >&2; exit 2; }
+
+          # Check if minitest dataset exists, if not, prepare it
+          if [[ ! -d "$cpfs_root" ]] || [[ ! -f "$cpfs_root/minitest_manifest.json" ]]; then
+            echo "Minitest dataset not found at $cpfs_root"
+            echo "Please run: python scripts/prepare_minitest_dataset.py --cpfs-root $cpfs_root"
+            exit 2
+          fi
+
+      - name: Verify local environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d "$GITHUB_WORKSPACE"
+          test -d "$GITHUB_WORKSPACE/src"
+          test -d "$GITHUB_WORKSPACE/packages/openpi-client/src"
+          test -x "$OPENPI_SHARED_VENV_PATH/bin/python"
+          test -d "$OPENPI_SHARED_HOME/.cache/openpi"
+          test -f "$OPENPI_SHARED_HOME/.cache/openpi/big_vision/paligemma_tokenizer.model"
+          test -f "$OPENPI_FFMPEG_LIB_DIR/libavformat.so.61"
+          mkdir -p "$OPENPI_CI_TMP_ROOT"
+
+      - name: Prune stale CI temp directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          find "$OPENPI_CI_TMP_ROOT" -mindepth 1 -maxdepth 1 -type d \( -name 'openpi-runtime-*' -o -name 'openpi-pytest-cache-*' -o -name 'rt-*' -o -name 'pc-*' \) -mtime +1 -exec rm -rf {} +
+
+      - name: Run fast openloop evaluation
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
+          runtime_root="$OPENPI_CI_TMP_ROOT/rt-of-${GITHUB_RUN_ID}"
+          pytest_cache_dir="$OPENPI_CI_TMP_ROOT/pc-of-${GITHUB_RUN_ID}"
+          export OPENPI_RUNTIME_ROOT="$runtime_root"
+          source scripts/ci/setup_runtime_env.sh "$OPENPI_RUNTIME_ROOT" "$OPENPI_SHARED_HOME"
+          export PATH="$OPENPI_SHARED_VENV_PATH/bin:$PATH"
+          export LD_LIBRARY_PATH="$OPENPI_FFMPEG_LIB_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          export PYTHONPATH="$GITHUB_WORKSPACE:$GITHUB_WORKSPACE/src:$GITHUB_WORKSPACE/packages/openpi-client/src${PYTHONPATH:+:$PYTHONPATH}"
+          export PYTEST_ADDOPTS="-o cache_dir=$pytest_cache_dir"
+
+          # Run openloop evaluation with minitest dataset
+          bash tests/run_tests.sh openloop-eval \
+            --config src/openpi/configs/cfg_opensource/cfg_minitest_openloop.py \
+            --repo_id robomind_2/agilex/fold_clothes/success_episodes \
+            --checkpoint_dir "$OPENLOOP_FAST_CHECKPOINT_DIR" \
+            --dataset_root "$OPENLOOP_FAST_CPFS_ROOT" \
+            --vis_dir "$OPENPI_RUNTIME_ROOT/openloop_fast_vis" \
+            --results_dir "$OPENPI_RUNTIME_ROOT/openloop_fast_results" \
+            --num_batches 2 \
+            --batch_size 16 \
+            --output openloop_fast_results.json
+
+      - name: Clean CI temp directories
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmp_root="${OPENPI_CI_TMP_ROOT:-}"
+          tmp_target="${OPENPI_CI_TMP_TARGET:-}"
+          if [[ -n "$tmp_root" ]]; then
+            rm -rf \
+              "$tmp_root/rt-of-${GITHUB_RUN_ID}" \
+              "$tmp_root/pc-of-${GITHUB_RUN_ID}" \
+              "$tmp_root"
+          fi
+          if [[ -n "$tmp_target" ]]; then
+            rm -rf "$tmp_target"
+          fi

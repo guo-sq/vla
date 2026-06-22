@@ -1,0 +1,5 @@
+tk
+oss2
+pandas
+pyarrow
+fastparquet

@@ -1,0 +1,41 @@
+flowchart TD
+    A[Start Episode<br/>role=folder/disturber] --> B[Main Control Loop]
+    B --> B0{Ctrl+Space pressed?}
+    B0 -->|Yes| S[Enter human takeover mode]
+    B0 -->|No| C{Stop / exit_early?}
+    C -->|Yes| Z[End Episode Loop]
+    C -->|No| D{No time limit<br/>max_time_s=null}
+
+    D --> E[Get observation + check home]
+
+    E --> F{At home, all joints within threshold=2.5<br/>all joint speeds below speed_threshold=0.5<br/>and not already evaluated in this home stay?}
+    F -->|No| H[Continue action branch]
+    F -->|Yes| F1{home_wait_s=2.0 elapsed?}
+    F1 -->|No| F2[Keep inference running<br/>If leave home: reset timer]
+    F2 --> H
+    F1 -->|Yes| G[Home-only success: no value model needed]
+
+    G --> K1[task_success=True<br/>end_reason=home_success<br/>End loop immediately]
+
+    H --> L[No collision detection<br/>no safety config for fold cloth]
+    L --> M[Policy/teleop action execution]
+
+    S --> T{Ctrl+Space to exit takeover?}
+    T -->|No| S
+    T -->|Yes| V0[Exit takeover<br/>resume inference]
+    V0 --> B
+    M --> M1{Inference timeout?}
+    M1 -->|Yes| S
+    M1 -->|No| B
+
+    Z --> ZA[Label success/fail by home status]
+    ZA --> ZB{At home?}
+    ZB -->|No| ZH[Call for human takeover<br/>move robot back home]
+    ZH --> ZB
+    ZB -->|Yes| ZC[Wait home stable]
+    ZC --> ZD[Advance role: folder↔disturber]
+    ZD --> ZE[Next episode]
+
+    style G fill:#90EE90
+    style K1 fill:#90EE90
+    style L fill:#FFE4B5

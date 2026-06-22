@@ -1,0 +1,54 @@
+PICK_PLACE:
+  subtask_time_s:
+    pick: 35.0
+    bag: 10.0
+    place: 10.0
+  frame_state_mapping:
+    invalid:
+      ind: 0
+      lang: 无效
+    deviation:
+      ind: 1
+      lang: 有偏
+    fail:
+      ind: 2
+      lang: 失败
+    success:
+      ind: 3
+      lang: 成功
+  loop_task_record: False
+  sub_episode_task_json: tts_record_cfgs/pick_place_subtask_annotations.jsonl
+  loop_task_record: False
+  record_mode: Normal_Record
+  Normal_Record:
+    start_record_time_s: 0.0
+    record_sub_task_till_episode_end: False
+    sub_episode_taskinds: [1, 3]
+
+POUR_WATER:
+  subtask_time_s:
+    pick_container: 12.0
+    place_container: 15.0
+    pick_liquid: 18.0
+    pour_liquid: 10.0
+    place_liquid: 10.0
+  frame_state_mapping:
+    invalid:
+      ind: 0
+      lang: 无效
+    deviation:
+      ind: 1
+      lang: 有偏
+    fail:
+      ind: 2
+      lang: 失败
+    success:
+      ind: 3
+      lang: 成功
+  sub_episode_task_json: tts_record_cfgs/pour_water_subtask_annotations.jsonl
+  loop_task_record: False
+  record_mode: Normal_Record
+  Normal_Record:
+    start_record_time_s: 0.0
+    record_sub_task_till_episode_end: False
+    sub_episode_taskinds: [1, 2, 3, 4, 5]

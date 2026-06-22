@@ -1,0 +1,71 @@
+{
+    "schema_version": "1",
+    "session_id": "seatbelt.record.v1",
+
+    "robot": {
+        "type": "arxx5_bimanual",
+        "id": "2"
+    },
+
+    "hardware_meta": {
+        "end_effector": {
+            "left":  {"type": "gripper", "model": "long"},
+            "right": {"type": "gripper", "model": "long"}
+        },
+        "cameras": {
+            "head":        {"type": "opencv", "index_or_path": 16, "width": 640, "height": 480, "fps": 30},
+            "left_wrist":  {"type": "opencv", "index_or_path": 10, "width": 640, "height": 480, "fps": 30},
+            "right_wrist": {"type": "opencv", "index_or_path": 4,  "width": 640, "height": 480, "fps": 30}
+        }
+    },
+
+    "collection_meta": {
+        "operator_name": "yangjiaxu",
+        "adversary_operator": "",
+        "is_adversary": false,
+        "is_self_play": false,
+        "acting_arms": ["right"],
+        "site_location": "beijing_7F",
+        "city": "beijing",
+        "mode": "record"
+    },
+
+    "task_meta": {
+        "task_name": "seatbelt",
+        "task_stage": {"mode": "full", "stages": ""},
+        "objects": {}
+    },
+
+    "task_description": "Hang the seatbelt with right hand.",
+
+    "task_spec": {
+        "task_id": "seatbelt",
+        "roles": {
+            "operator": {
+                "prompt": "Hang the seatbelt with right hand.",
+                "max_time_s": null
+            }
+        }
+    },
+
+    "recording": {
+        "num_episodes": 10,
+        "episode_time_s": 1000,
+        "reset_time_s": 5,
+        "fps": 30,
+        "video": true,
+        "display_data": true,
+        "play_sounds": true,
+        "enable_log_say": true,
+        "enable_logging": true,
+        "progress_print_interval_s": 1.0,
+        "auto_success": false,
+        "resume": false,
+        "debug": false
+    },
+
+    "inference": {},
+    "intervention": {},
+    "self_play": {},
+    "subtask": {}
+}
