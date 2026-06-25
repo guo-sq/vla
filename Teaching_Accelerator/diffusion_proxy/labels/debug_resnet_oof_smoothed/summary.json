@@ -1,0 +1,52 @@
+{
+  "thresholds": {
+    "diffusion_precision_min": 0.7117845118045807,
+    "diffusion_entropy_casual_min": 0.612971431016922,
+    "static_speed_max": 0.018827836960554123,
+    "precision_quantile": 0.75,
+    "casual_quantile": 0.65,
+    "static_speed_quantile": 0.1,
+    "smoothing_half_window": 8,
+    "min_span_frames": 15,
+    "merge_gap_frames": 10,
+    "span_padding_frames": 8
+  },
+  "label_counts": {
+    "precision": 891,
+    "neutral": 1763,
+    "casual": 1429
+  },
+  "num_hard_spans": 35,
+  "num_episodes": 4,
+  "num_frames": 4083,
+  "action_dim": 14,
+  "root_dir": "/mnt/oss_data/anyverse_human_data_record/arxx5_bimanual/seatbelt",
+  "repo_ids": [
+    "seatbelt.both.hang.zhangyu.20260205.batch.1",
+    "seatbelt.both.hang.zhangyu.20260205.batch.2",
+    "seatbelt.both.hang.zhangyu.20260205.batch.3",
+    "seatbelt.both.hang.zhangyu.20260205.batch.4"
+  ],
+  "vision_cache": "cache/debug_resnet_vision_head",
+  "camera": "observation.images.head",
+  "encoder": "resnet18",
+  "checkpoint_dir": "checkpoints/debug_resnet_oof",
+  "checkpoints": [
+    "checkpoints/debug_resnet_oof/fold_00.pt",
+    "checkpoints/debug_resnet_oof/fold_01.pt"
+  ],
+  "output": "labels/debug_resnet_oof_smoothed/diffusion_labels.jsonl",
+  "records": 4,
+  "frames_by_repo": {
+    "seatbelt.both.hang.zhangyu.20260205.batch.1": 1033,
+    "seatbelt.both.hang.zhangyu.20260205.batch.2": 1055,
+    "seatbelt.both.hang.zhangyu.20260205.batch.3": 1056,
+    "seatbelt.both.hang.zhangyu.20260205.batch.4": 939
+  },
+  "hard_spans_by_repo": {
+    "seatbelt.both.hang.zhangyu.20260205.batch.1": 9,
+    "seatbelt.both.hang.zhangyu.20260205.batch.2": 9,
+    "seatbelt.both.hang.zhangyu.20260205.batch.3": 7,
+    "seatbelt.both.hang.zhangyu.20260205.batch.4": 10
+  }
+}

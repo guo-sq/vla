@@ -1,0 +1,64 @@
+{
+  "method": "rule_diffusion_fusion_v1",
+  "weights": {
+    "rule_weight": 0.5,
+    "diffusion_weight": 0.3,
+    "event_weight": 0.2
+  },
+  "thresholds": {
+    "fusion_precision_min": 0.7394337952136993,
+    "fusion_casualness_min": 0.5940386414527894,
+    "precision_quantile": 0.75,
+    "casual_quantile": 0.65
+  },
+  "label_counts": {
+    "neutral": 1683,
+    "precision": 1170,
+    "casual": 1230
+  },
+  "reason_counts": {
+    "source_conflict": 1054,
+    "neutral": 802,
+    "diffusion_precision": 222,
+    "rule_precision": 541,
+    "both_precision": 236,
+    "diffusion_casual": 399,
+    "both_casual": 437,
+    "rule_casual": 392
+  },
+  "source_confusion_rule_to_diffusion": {
+    "neutral": {
+      "casual": 674,
+      "neutral": 801,
+      "precision": 406
+    },
+    "precision": {
+      "casual": 317,
+      "neutral": 415,
+      "precision": 236
+    },
+    "casual": {
+      "casual": 438,
+      "neutral": 513,
+      "precision": 283
+    }
+  },
+  "num_episodes": 4,
+  "num_frames": 4083,
+  "num_hard_spans": 28,
+  "frames_by_repo": {
+    "seatbelt.both.hang.zhangyu.20260205.batch.1": 1033,
+    "seatbelt.both.hang.zhangyu.20260205.batch.2": 1055,
+    "seatbelt.both.hang.zhangyu.20260205.batch.3": 1056,
+    "seatbelt.both.hang.zhangyu.20260205.batch.4": 939
+  },
+  "hard_spans_by_repo": {
+    "seatbelt.both.hang.zhangyu.20260205.batch.1": 6,
+    "seatbelt.both.hang.zhangyu.20260205.batch.2": 6,
+    "seatbelt.both.hang.zhangyu.20260205.batch.3": 7,
+    "seatbelt.both.hang.zhangyu.20260205.batch.4": 9
+  },
+  "rule_labels": "../rule_based/labels/debug_oof_rule/rule_labels.jsonl",
+  "diffusion_labels": "labels/debug_oof/diffusion_labels.jsonl",
+  "output": "labels/debug_oof/diffusion_fused_labels.jsonl"
+}

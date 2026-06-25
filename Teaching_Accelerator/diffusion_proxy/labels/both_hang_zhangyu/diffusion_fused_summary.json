@@ -1,0 +1,64 @@
+{
+  "method": "rule_diffusion_fusion_v1",
+  "weights": {
+    "rule_weight": 0.5,
+    "diffusion_weight": 0.3,
+    "event_weight": 0.2
+  },
+  "thresholds": {
+    "fusion_precision_min": 0.7177908718585968,
+    "fusion_casualness_min": 0.5305120348930359,
+    "precision_quantile": 0.75,
+    "casual_quantile": 0.65
+  },
+  "label_counts": {
+    "neutral": 31657,
+    "casual": 19100,
+    "precision": 18919
+  },
+  "reason_counts": {
+    "source_conflict": 24503,
+    "diffusion_casual": 5745,
+    "neutral": 11994,
+    "rule_precision": 9780,
+    "both_casual": 7007,
+    "rule_casual": 5849,
+    "diffusion_precision": 3071,
+    "both_precision": 1727
+  },
+  "source_confusion_rule_to_diffusion": {
+    "neutral": {
+      "casual": 12368,
+      "neutral": 11929,
+      "precision": 9331
+    },
+    "precision": {
+      "casual": 4947,
+      "neutral": 6890,
+      "precision": 1727
+    },
+    "casual": {
+      "casual": 7072,
+      "neutral": 9789,
+      "precision": 5623
+    }
+  },
+  "num_episodes": 67,
+  "num_frames": 69676,
+  "num_hard_spans": 329,
+  "frames_by_repo": {
+    "seatbelt.both.hang.zhangyu.20260205.batch.1": 20170,
+    "seatbelt.both.hang.zhangyu.20260205.batch.2": 31587,
+    "seatbelt.both.hang.zhangyu.20260205.batch.3": 16059,
+    "seatbelt.both.hang.zhangyu.20260205.batch.4": 1860
+  },
+  "hard_spans_by_repo": {
+    "seatbelt.both.hang.zhangyu.20260205.batch.1": 105,
+    "seatbelt.both.hang.zhangyu.20260205.batch.2": 143,
+    "seatbelt.both.hang.zhangyu.20260205.batch.3": 70,
+    "seatbelt.both.hang.zhangyu.20260205.batch.4": 11
+  },
+  "rule_labels": "../rule_based/labels/both_hang_zhangyu/rule_labels.jsonl",
+  "diffusion_labels": "labels/both_hang_zhangyu/diffusion_labels.jsonl",
+  "output": "labels/both_hang_zhangyu/diffusion_fused_labels.jsonl"
+}

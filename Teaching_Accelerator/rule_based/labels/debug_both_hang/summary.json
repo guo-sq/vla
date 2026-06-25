@@ -1,0 +1,124 @@
+{
+  "method": "rule_precision_segments_v1",
+  "config": {
+    "phase_bins": 24,
+    "smoothing_half_window": 2,
+    "gripper_event_window_frames": 30,
+    "static_speed_quantile": 0.1,
+    "precision_quantile": 0.75,
+    "casual_quantile": 0.65,
+    "precision_stride": 2,
+    "neutral_stride": 2,
+    "casual_stride": 4,
+    "min_span_frames": 15,
+    "merge_gap_frames": 10,
+    "span_padding_frames": 8,
+    "weight_phase_consistency": 0.35,
+    "weight_gripper_event": 0.3,
+    "weight_turn": 0.15,
+    "weight_jerk": 0.15,
+    "weight_coordination": 0.05
+  },
+  "thresholds": {
+    "hard_min": 0.4598175063729286,
+    "casual_min": 0.7566416263580322,
+    "static_speed_max": 0.05963845327496529,
+    "precision_quantile": 0.75,
+    "casual_quantile": 0.65,
+    "static_speed_quantile": 0.1
+  },
+  "label_counts": {
+    "neutral": 3809,
+    "precision": 1619,
+    "casual": 2610
+  },
+  "num_hard_spans": 39,
+  "num_episodes": 8,
+  "num_frames": 8038,
+  "action_dim": 14,
+  "phase": {
+    "phase_bins": 24,
+    "phase_counts": [
+      338,
+      334,
+      335,
+      335,
+      334,
+      335,
+      335,
+      333,
+      335,
+      335,
+      335,
+      333,
+      336,
+      335,
+      334,
+      334,
+      335,
+      334,
+      336,
+      334,
+      334,
+      336,
+      334,
+      339
+    ],
+    "phase_dispersion": [
+      0.022128000855445862,
+      0.171657994389534,
+      0.20714600384235382,
+      0.1543309986591339,
+      0.20262399315834045,
+      0.25620201230049133,
+      0.28404501080513,
+      0.41546300053596497,
+      0.339572012424469,
+      0.19178499281406403,
+      0.21913500130176544,
+      0.2972570061683655,
+      0.35667601227760315,
+      0.3690919876098633,
+      0.2849560081958771,
+      0.28885599970817566,
+      0.3170660138130188,
+      0.23904800415039062,
+      0.26266300678253174,
+      0.3376519978046417,
+      0.29245200753211975,
+      0.1460610032081604,
+      0.08190900087356567,
+      0.03938800096511841
+    ],
+    "semantics": {
+      "phase_dispersion": "casualness_positive",
+      "phase_consistency": "precision_positive"
+    }
+  },
+  "root_dir": "/mnt/oss_data/anyverse_human_data_record/arxx5_bimanual/seatbelt",
+  "repo_ids": [
+    "seatbelt.both.hang.zhangyu.20260205.batch.1",
+    "seatbelt.both.hang.zhangyu.20260205.batch.2",
+    "seatbelt.both.hang.zhangyu.20260205.batch.3",
+    "seatbelt.both.hang.zhangyu.20260205.batch.4"
+  ],
+  "output": "labels/debug_both_hang/rule_labels.jsonl",
+  "episodes_by_repo": {
+    "seatbelt.both.hang.zhangyu.20260205.batch.1": 2,
+    "seatbelt.both.hang.zhangyu.20260205.batch.2": 2,
+    "seatbelt.both.hang.zhangyu.20260205.batch.3": 2,
+    "seatbelt.both.hang.zhangyu.20260205.batch.4": 2
+  },
+  "frames_by_repo": {
+    "seatbelt.both.hang.zhangyu.20260205.batch.1": 1923,
+    "seatbelt.both.hang.zhangyu.20260205.batch.2": 2097,
+    "seatbelt.both.hang.zhangyu.20260205.batch.3": 2158,
+    "seatbelt.both.hang.zhangyu.20260205.batch.4": 1860
+  },
+  "hard_spans_by_repo": {
+    "seatbelt.both.hang.zhangyu.20260205.batch.1": 7,
+    "seatbelt.both.hang.zhangyu.20260205.batch.2": 10,
+    "seatbelt.both.hang.zhangyu.20260205.batch.3": 11,
+    "seatbelt.both.hang.zhangyu.20260205.batch.4": 11
+  }
+}

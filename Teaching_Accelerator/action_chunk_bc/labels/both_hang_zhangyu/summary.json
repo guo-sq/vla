@@ -1,0 +1,57 @@
+{
+  "thresholds": {
+    "bc_precision_min": 0.8973654359579086,
+    "ensemble_disagreement_casual_min": 0.366026796400547,
+    "static_speed_max": 0.016281330958008766,
+    "precision_quantile": 0.75,
+    "casual_quantile": 0.65,
+    "static_speed_quantile": 0.1
+  },
+  "label_counts": {
+    "precision": 11593,
+    "neutral": 33696,
+    "casual": 24387
+  },
+  "num_hard_spans": 293,
+  "num_episodes": 67,
+  "num_frames": 69676,
+  "action_dim": 14,
+  "records": 67,
+  "fps": [
+    30
+  ],
+  "root_dir": "/mnt/oss_data/anyverse_human_data_record/arxx5_bimanual/seatbelt",
+  "repo_ids": [
+    "seatbelt.both.hang.zhangyu.20260205.batch.1",
+    "seatbelt.both.hang.zhangyu.20260205.batch.2",
+    "seatbelt.both.hang.zhangyu.20260205.batch.3",
+    "seatbelt.both.hang.zhangyu.20260205.batch.4"
+  ],
+  "checkpoint_dir": "checkpoints/both_hang_zhangyu",
+  "checkpoints": [
+    "checkpoints/both_hang_zhangyu/seed_0.pt",
+    "checkpoints/both_hang_zhangyu/seed_1.pt",
+    "checkpoints/both_hang_zhangyu/seed_2.pt",
+    "checkpoints/both_hang_zhangyu/seed_3.pt",
+    "checkpoints/both_hang_zhangyu/seed_4.pt"
+  ],
+  "output": "labels/both_hang_zhangyu/bc_ensemble_labels.jsonl",
+  "episodes_by_repo": {
+    "seatbelt.both.hang.zhangyu.20260205.batch.1": 20,
+    "seatbelt.both.hang.zhangyu.20260205.batch.2": 30,
+    "seatbelt.both.hang.zhangyu.20260205.batch.3": 15,
+    "seatbelt.both.hang.zhangyu.20260205.batch.4": 2
+  },
+  "frames_by_repo": {
+    "seatbelt.both.hang.zhangyu.20260205.batch.1": 20170,
+    "seatbelt.both.hang.zhangyu.20260205.batch.2": 31587,
+    "seatbelt.both.hang.zhangyu.20260205.batch.3": 16059,
+    "seatbelt.both.hang.zhangyu.20260205.batch.4": 1860
+  },
+  "hard_spans_by_repo": {
+    "seatbelt.both.hang.zhangyu.20260205.batch.1": 64,
+    "seatbelt.both.hang.zhangyu.20260205.batch.2": 133,
+    "seatbelt.both.hang.zhangyu.20260205.batch.3": 85,
+    "seatbelt.both.hang.zhangyu.20260205.batch.4": 11
+  }
+}
