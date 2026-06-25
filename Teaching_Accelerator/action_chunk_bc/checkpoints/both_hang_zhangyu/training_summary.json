@@ -1,0 +1,81 @@
+{
+  "root_dir": "/mnt/oss_data/anyverse_human_data_record/arxx5_bimanual/seatbelt",
+  "repo_ids": [
+    "seatbelt.both.hang.zhangyu.20260205.batch.1",
+    "seatbelt.both.hang.zhangyu.20260205.batch.2",
+    "seatbelt.both.hang.zhangyu.20260205.batch.3",
+    "seatbelt.both.hang.zhangyu.20260205.batch.4"
+  ],
+  "checkpoint_dir": "checkpoints/both_hang_zhangyu",
+  "checkpoints": [
+    "checkpoints/both_hang_zhangyu/seed_0.pt",
+    "checkpoints/both_hang_zhangyu/seed_1.pt",
+    "checkpoints/both_hang_zhangyu/seed_2.pt",
+    "checkpoints/both_hang_zhangyu/seed_3.pt",
+    "checkpoints/both_hang_zhangyu/seed_4.pt"
+  ],
+  "num_episodes": 67,
+  "num_frames": 69676,
+  "action_dim": 14,
+  "feature_dim": 43,
+  "horizon": 16,
+  "train_config": {
+    "horizon": 16,
+    "action_dim": 14,
+    "input_dim": 43,
+    "hidden_dim": 256,
+    "layers": 3,
+    "batch_size": 1024,
+    "epochs": 80,
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "train_fraction": 0.9
+  },
+  "seeds": [
+    {
+      "seed": 0,
+      "checkpoint": "checkpoints/both_hang_zhangyu/seed_0.pt",
+      "final_metrics": {
+        "epoch": 80.0,
+        "train_loss": 0.002254542707054315,
+        "val_loss": 0.0024326785631161333
+      }
+    },
+    {
+      "seed": 1,
+      "checkpoint": "checkpoints/both_hang_zhangyu/seed_1.pt",
+      "final_metrics": {
+        "epoch": 80.0,
+        "train_loss": 0.002227382632728088,
+        "val_loss": 0.002454343064229435
+      }
+    },
+    {
+      "seed": 2,
+      "checkpoint": "checkpoints/both_hang_zhangyu/seed_2.pt",
+      "final_metrics": {
+        "epoch": 80.0,
+        "train_loss": 0.0022500343298048936,
+        "val_loss": 0.0024599138399784963
+      }
+    },
+    {
+      "seed": 3,
+      "checkpoint": "checkpoints/both_hang_zhangyu/seed_3.pt",
+      "final_metrics": {
+        "epoch": 80.0,
+        "train_loss": 0.0022364000773870386,
+        "val_loss": 0.002558431832438461
+      }
+    },
+    {
+      "seed": 4,
+      "checkpoint": "checkpoints/both_hang_zhangyu/seed_4.pt",
+      "final_metrics": {
+        "epoch": 80.0,
+        "train_loss": 0.0022481527782638247,
+        "val_loss": 0.002402689649288283
+      }
+    }
+  ]
+}

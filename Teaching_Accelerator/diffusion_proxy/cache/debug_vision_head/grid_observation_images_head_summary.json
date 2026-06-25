@@ -1,0 +1,15 @@
+{
+  "root_dir": "/mnt/oss_data/anyverse_human_data_record/arxx5_bimanual/seatbelt",
+  "repo_ids": [
+    "seatbelt.both.hang.zhangyu.20260205.batch.1",
+    "seatbelt.both.hang.zhangyu.20260205.batch.2",
+    "seatbelt.both.hang.zhangyu.20260205.batch.3",
+    "seatbelt.both.hang.zhangyu.20260205.batch.4"
+  ],
+  "camera": "observation.images.head",
+  "encoder": "grid",
+  "output_dir": "cache/debug_vision_head",
+  "written": 4,
+  "skipped": 0,
+  "total": 4
+}

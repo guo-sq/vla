@@ -1,7 +1,3 @@
 **/__pycache__/
 **/.pytest_cache/
 **/*.py[cod]
-
-action_chunk_bc/checkpoints/
-diffusion_proxy/checkpoints/
-diffusion_proxy/cache/

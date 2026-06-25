@@ -1,0 +1,51 @@
+{
+  "root_dir": "/mnt/oss_data/anyverse_human_data_record/arxx5_bimanual/seatbelt",
+  "repo_ids": [
+    "seatbelt.both.hang.zhangyu.20260205.batch.1",
+    "seatbelt.both.hang.zhangyu.20260205.batch.2",
+    "seatbelt.both.hang.zhangyu.20260205.batch.3",
+    "seatbelt.both.hang.zhangyu.20260205.batch.4"
+  ],
+  "checkpoint_dir": "checkpoints/debug_both_hang",
+  "checkpoints": [
+    "checkpoints/debug_both_hang/seed_0.pt",
+    "checkpoints/debug_both_hang/seed_1.pt"
+  ],
+  "num_episodes": 8,
+  "num_frames": 8038,
+  "action_dim": 14,
+  "feature_dim": 43,
+  "horizon": 16,
+  "train_config": {
+    "horizon": 16,
+    "action_dim": 14,
+    "input_dim": 43,
+    "hidden_dim": 256,
+    "layers": 3,
+    "batch_size": 1024,
+    "epochs": 3,
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "train_fraction": 0.9
+  },
+  "seeds": [
+    {
+      "seed": 0,
+      "checkpoint": "checkpoints/debug_both_hang/seed_0.pt",
+      "final_metrics": {
+        "epoch": 3.0,
+        "train_loss": 0.07620898963054933,
+        "val_loss": 0.059465423226356506
+      }
+    },
+    {
+      "seed": 1,
+      "checkpoint": "checkpoints/debug_both_hang/seed_1.pt",
+      "final_metrics": {
+        "epoch": 3.0,
+        "train_loss": 0.07450996550046708,
+        "val_loss": 0.05616872012615204
+      }
+    }
+  ]
+}

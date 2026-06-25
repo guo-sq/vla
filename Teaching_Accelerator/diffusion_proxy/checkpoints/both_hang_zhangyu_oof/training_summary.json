@@ -1,0 +1,363 @@
+{
+  "root_dir": "/mnt/oss_data/anyverse_human_data_record/arxx5_bimanual/seatbelt",
+  "repo_ids": [
+    "seatbelt.both.hang.zhangyu.20260205.batch.1",
+    "seatbelt.both.hang.zhangyu.20260205.batch.2",
+    "seatbelt.both.hang.zhangyu.20260205.batch.3",
+    "seatbelt.both.hang.zhangyu.20260205.batch.4"
+  ],
+  "vision_cache": "cache/vision_head",
+  "camera": "observation.images.head",
+  "encoder": "resnet18",
+  "checkpoint_dir": "checkpoints/both_hang_zhangyu_oof",
+  "checkpoints": [
+    "checkpoints/both_hang_zhangyu_oof/fold_00.pt",
+    "checkpoints/both_hang_zhangyu_oof/fold_01.pt",
+    "checkpoints/both_hang_zhangyu_oof/fold_02.pt",
+    "checkpoints/both_hang_zhangyu_oof/fold_03.pt",
+    "checkpoints/both_hang_zhangyu_oof/fold_04.pt"
+  ],
+  "num_episodes": 67,
+  "num_frames": 69676,
+  "condition_dim": 555,
+  "action_dim": 14,
+  "folds": 5,
+  "train_config": {
+    "horizon": 16,
+    "action_dim": 14,
+    "hidden_dim": 512,
+    "blocks": 4,
+    "time_dim": 128,
+    "diffusion_steps": 100,
+    "batch_size": 1024,
+    "epochs": 80,
+    "lr": 0.0003,
+    "weight_decay": 0.0001,
+    "ema_decay": 0.995
+  },
+  "fold_summaries": [
+    {
+      "fold_index": 0,
+      "checkpoint": "checkpoints/both_hang_zhangyu_oof/fold_00.pt",
+      "heldout_keys": [
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.1",
+          1
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.1",
+          13
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.1",
+          15
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.1",
+          19
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          2
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          7
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          10
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          11
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          16
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          18
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          27
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.3",
+          6
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.3",
+          12
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.4",
+          0
+        ]
+      ],
+      "final_metrics": {
+        "epoch": 80.0,
+        "train_loss": 0.05649903719886365,
+        "val_loss": 0.06550879216981184
+      }
+    },
+    {
+      "fold_index": 1,
+      "checkpoint": "checkpoints/both_hang_zhangyu_oof/fold_01.pt",
+      "heldout_keys": [
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.1",
+          5
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.1",
+          10
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.1",
+          12
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          0
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          6
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          8
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          12
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          13
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          15
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          22
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.3",
+          2
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.3",
+          9
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.3",
+          10
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.4",
+          1
+        ]
+      ],
+      "final_metrics": {
+        "epoch": 80.0,
+        "train_loss": 0.057698515545785097,
+        "val_loss": 0.06556301194832787
+      }
+    },
+    {
+      "fold_index": 2,
+      "checkpoint": "checkpoints/both_hang_zhangyu_oof/fold_02.pt",
+      "heldout_keys": [
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.1",
+          4
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.1",
+          7
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.1",
+          16
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.1",
+          18
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          1
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          3
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          5
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          17
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          29
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.3",
+          0
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.3",
+          3
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.3",
+          4
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.3",
+          5
+        ]
+      ],
+      "final_metrics": {
+        "epoch": 80.0,
+        "train_loss": 0.057011972247554984,
+        "val_loss": 0.06601120759317276
+      }
+    },
+    {
+      "fold_index": 3,
+      "checkpoint": "checkpoints/both_hang_zhangyu_oof/fold_03.pt",
+      "heldout_keys": [
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.1",
+          0
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.1",
+          2
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.1",
+          8
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.1",
+          11
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          4
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          9
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          14
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          20
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          23
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          25
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.3",
+          7
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.3",
+          11
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.3",
+          14
+        ]
+      ],
+      "final_metrics": {
+        "epoch": 80.0,
+        "train_loss": 0.05847687701207162,
+        "val_loss": 0.07129368115084479
+      }
+    },
+    {
+      "fold_index": 4,
+      "checkpoint": "checkpoints/both_hang_zhangyu_oof/fold_04.pt",
+      "heldout_keys": [
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.1",
+          3
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.1",
+          6
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.1",
+          9
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.1",
+          14
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.1",
+          17
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          19
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          21
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          24
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          26
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          28
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.3",
+          1
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.3",
+          8
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.3",
+          13
+        ]
+      ],
+      "final_metrics": {
+        "epoch": 80.0,
+        "train_loss": 0.05680524073439054,
+        "val_loss": 0.06821698996842557
+      }
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "root_dir": "/mnt/oss_data/anyverse_human_data_record/arxx5_bimanual/seatbelt",
+  "repo_ids": [
+    "seatbelt.both.hang.zhangyu.20260205.batch.1",
+    "seatbelt.both.hang.zhangyu.20260205.batch.2",
+    "seatbelt.both.hang.zhangyu.20260205.batch.3",
+    "seatbelt.both.hang.zhangyu.20260205.batch.4"
+  ],
+  "vision_cache": "cache/debug_resnet_vision_head",
+  "camera": "observation.images.head",
+  "encoder": "resnet18",
+  "checkpoint_dir": "checkpoints/debug_resnet_oof",
+  "checkpoints": [
+    "checkpoints/debug_resnet_oof/fold_00.pt",
+    "checkpoints/debug_resnet_oof/fold_01.pt"
+  ],
+  "num_episodes": 4,
+  "num_frames": 4083,
+  "condition_dim": 555,
+  "action_dim": 14,
+  "folds": 2,
+  "train_config": {
+    "horizon": 16,
+    "action_dim": 14,
+    "hidden_dim": 128,
+    "blocks": 2,
+    "time_dim": 128,
+    "diffusion_steps": 20,
+    "batch_size": 512,
+    "epochs": 1,
+    "lr": 0.0003,
+    "weight_decay": 0.0001,
+    "ema_decay": 0.995
+  },
+  "fold_summaries": [
+    {
+      "fold_index": 0,
+      "checkpoint": "checkpoints/debug_resnet_oof/fold_00.pt",
+      "heldout_keys": [
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.2",
+          0
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.3",
+          0
+        ]
+      ],
+      "final_metrics": {
+        "epoch": 1.0,
+        "train_loss": 1.0977684273922903,
+        "val_loss": 1.0755544552470993
+      }
+    },
+    {
+      "fold_index": 1,
+      "checkpoint": "checkpoints/debug_resnet_oof/fold_01.pt",
+      "heldout_keys": [
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.1",
+          0
+        ],
+        [
+          "seatbelt.both.hang.zhangyu.20260205.batch.4",
+          0
+        ]
+      ],
+      "final_metrics": {
+        "epoch": 1.0,
+        "train_loss": 1.0929502761516454,
+        "val_loss": 1.0661452005165828
+      }
+    }
+  ]
+}
