@@ -1,0 +1,22 @@
+[project]
+name = "teaching-accelerator"
+version = "0.1.0"
+description = "Rule and proxy-policy tools for acceleration-oriented robot teaching data."
+requires-python = ">=3.11"
+dependencies = [
+    "numpy",
+    "pyarrow",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
